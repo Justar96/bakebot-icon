@@ -1,19 +1,34 @@
 {
   "name": "gisx-icon",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.2.0",
+  "license": "MIT",
   "type": "module",
   "description": "Code-native gisx brand mark.",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/Justar96/gisx-icon.git"
+    "url": "git+https://github.com/Justar96/gisx-icon.git"
   },
-  "sideEffects": ["**/*.css"],
+  "homepage": "https://github.com/Justar96/gisx-icon",
+  "bugs": {
+    "url": "https://github.com/Justar96/gisx-icon/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./gisx-icon.css": "./dist/gisx-icon.css"
   },
-  "files": ["src"],
+  "files": ["dist"],
   "scripts": {
+    "build": "bun scripts/build.ts",
+    "prepublishOnly": "bun test && bun run typecheck && bun run build",
     "test": "bun test",
     "typecheck": "tsc --noEmit"
   },

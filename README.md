@@ -1,6 +1,6 @@
 # gisx-icon
 
-Code-native gisx brand mark. This package is private. It is not published to npm.
+Code-native gisx brand mark.
 
 ```ts
 import { GisxIcon } from "gisx-icon";
@@ -8,14 +8,12 @@ import { GisxIcon } from "gisx-icon";
 <GisxIcon state={entry.attention.state} size={32} />
 ```
 
-The mark takes a wire pane state whole, payload included, and normalises it itself.
+The mark takes a wire pane state whole, payload included, and normalises it itself. Styles ship with the component — no extra CSS import.
 
 ## Install
 
-From another private repo, pin a tag over SSH:
-
 ```bash
-bun add git+ssh://git@github.com:Justar96/gisx-icon.git#v0.1.0
+bun add gisx-icon
 ```
 
 Peer dependency: `react` ^19.
@@ -26,4 +24,7 @@ Peer dependency: `react` ^19.
 bun install
 bun test
 bun run typecheck
+bun run build
 ```
+
+Publish is `npm publish` from a clean build, or pushing a `v*` tag once `NPM_TOKEN` is set on the repo.
