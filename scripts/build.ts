@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 import { rm } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
 
@@ -20,11 +20,10 @@ if (!result.success) {
   process.exit(1);
 }
 
-if (existsSync("dist/index.css")) {
-  renameSync("dist/index.css", "dist/gisx-icon.css");
-} else {
-  writeFileSync("dist/gisx-icon.css", readFileSync("src/gisx-icon.css"));
-}
+// Bun drops empty rules, including the Idle marker the pane-state drift
+// test requires. Ship the source stylesheet as written.
+if (existsSync("dist/index.css")) unlinkSync("dist/index.css");
+writeFileSync("dist/gisx-icon.css", readFileSync("src/gisx-icon.css"));
 
 let js = readFileSync("dist/index.js", "utf8");
 if (js.length < 1000) {
