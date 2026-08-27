@@ -4,6 +4,12 @@
   /* Brand colour is independent from state. A caller can replace this token
    * through the component's `color` prop or the custom property itself. */
   --gisx-icon-color: var(--state-idle, #767676);
+  /* The eye's two fills chain to the host's theme tokens, then to a literal.
+   * Without the literal a consumer that does not define `--text` gets an
+   * invalid `fill`, which resolves to black on both circles — a solid disc
+   * with no visible pupil. */
+  --gisx-eye-color: var(--text, #14161a);
+  --gisx-pupil-color: var(--window-bg, #fbfbfd);
   --gisx-eye-x: 0px;
   --gisx-eye-y: 0px;
   --gisx-eye-scale-x: 1;
@@ -52,7 +58,7 @@
 }
 
 .gisx-icon__outer {
-  fill: var(--text);
+  fill: var(--gisx-eye-color);
   transform: translate3d(0, var(--gisx-outer-y), 0)
     scale(var(--gisx-outer-scale-x), var(--gisx-outer-scale-y));
   transition: transform var(--gisx-state-duration) var(--gisx-state-ease);
@@ -65,7 +71,7 @@
 }
 
 .gisx-icon__inner {
-  fill: var(--window-bg);
+  fill: var(--gisx-pupil-color);
 }
 
 /* These are the only layers written by the simulation. When life ends,
