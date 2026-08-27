@@ -16,6 +16,7 @@ import {
   blinkClosure,
   createEyeState,
   deformation,
+  isBlinking,
   MAX_STRETCH,
   type EyeState,
 } from "../src/eye";
@@ -38,6 +39,7 @@ import {
 } from "../src/geometry";
 import { stepSpring } from "../src/spring";
 import { STATE_GAZE } from "../src/states";
+import type { GazeIntent } from "../src/types";
 
 const STEP = 1 / 240;
 const CORNER = { x: 26, y: -26 };
@@ -380,5 +382,96 @@ describe("the mark's life in each state", () => {
       .map(([name]) => name);
 
     expect(closed).toEqual(["Exited"]);
+  });
+});
+
+describe("hardening of the simulation boundary", () => {
+  it("refuses degenerate step sizes instead of hanging or exploding", () => {
+    // A zero step would divide the arrival speed by zero; speed Infinity never
+    // falls below SETTLE_SPEED, so the gaze dwell would stall forever.
+    const state = createEyeState();
+    advanceEye(state, CORNER, 0, 0);
+    advanceEye(state, CORNER, -1, 0);
+    advanceEye(state, CORNER, Number.NaN, 0);
+
+    expect(state.x.position).toBe(0);
+    expect(state.x.velocity).toBe(0);
+    expect(Number.isFinite(state.speed)).toBe(true);
+    expect(isBlinking(state)).toBe(false);
+  });
+
+  it("stays stable and contained when driven far coarser than the sim's own step", () => {
+    // 1/30 s steps would explode the stiff shell spring without subdivision.
+    const state = createEyeState();
+    let escaped = -Infinity;
+    for (let frame = 0; frame < 60; frame += 1) {
+      advanceEye(state, CORNER, 1 / 30, (frame + 1) / 30);
+      escaped = Math.max(escaped, escapeOf(state));
+    }
+
+    expect(escaped).toBeLessThan(1e-6);
+    expect(Number.isFinite(state.x.position)).toBe(true);
+    expect(state.press).toBeGreaterThan(0.8);
+  });
+
+  it("heals a poisoned spring back to rest instead of staying NaN forever", () => {
+    const state = createEyeState();
+    drive(state, CORNER, 1);
+
+    state.x = { position: Number.NaN, velocity: Number.NaN };
+    state.jellyY = { position: Number.POSITIVE_INFINITY, velocity: 0 };
+    state.blinkPhase = Number.NaN;
+    drive(state, INSIDE, 1);
+
+    expect(Number.isFinite(state.x.position)).toBe(true);
+    expect(Number.isFinite(state.jellyY.position)).toBe(true);
+    expect(Number.isFinite(blinkClosure(state.blinkPhase))).toBe(true);
+
+    // Recovery means behaviour, not just finiteness: the eye still corners.
+    drive(state, CORNER, 2);
+    expect(state.press).toBeGreaterThan(0.8);
+  });
+
+  it("reads a non-finite intent as looking at the centre", () => {
+    const state = run({ x: Number.NaN, y: Number.POSITIVE_INFINITY }, 2).state;
+
+    expect(Number.isFinite(state.x.position)).toBe(true);
+    expect(Number.isFinite(state.pupilX.position)).toBe(true);
+    expect(Math.hypot(state.x.position, state.y.position)).toBeLessThan(TRAVEL_HALF);
+  });
+
+  it("keeps the pupil behind the shell's rim however the state was arrived at", () => {
+    const state = createEyeState();
+    state.pupilX = { position: 40, velocity: 500 };
+    advanceEye(state, { x: 60, y: 60 }, STEP, 1);
+
+    expect(Math.hypot(state.pupilX.position, state.pupilY.position)).toBeLessThanOrEqual(
+      TILE.eye - TILE.pupil + 1e-9,
+    );
+  });
+
+  it("leaves a degenerate spring step untouched rather than poisoning it", () => {
+    const value = { position: 3, velocity: -2 };
+    expect(stepSpring(value, 10, 0)).toBe(value);
+    expect(stepSpring(value, 10, Number.NaN)).toBe(value);
+
+    const exploded = stepSpring(value, 1e300, 1e300);
+    expect(exploded).toEqual({ position: 0, velocity: 0 });
+  });
+
+  it("falls back to the built-in gaze when runtime data is not an array", () => {
+    expect(normalizeGazeIntents(5 as unknown as GazeIntent[])).toBe(DEFAULT_GAZE_INTENTS);
+    expect(normalizeGazeIntents("look" as unknown as GazeIntent[])).toBe(DEFAULT_GAZE_INTENTS);
+    expect(normalizeGazeIntents(null as unknown as GazeIntent[])).toBe(DEFAULT_GAZE_INTENTS);
+  });
+
+  it("keeps the signed distance field sane for a degenerate corner radius", () => {
+    // A radius past the half extent clamps to the largest circle that fits.
+    expect(roundedRectDistance(0, 0, 30, 40)).toBeCloseTo(-30, 9);
+
+    const [nx, ny] = boundaryNormal(35, 0, 30, 40);
+    expect(Number.isFinite(nx)).toBe(true);
+    expect(Number.isFinite(ny)).toBe(true);
+    expect(Math.hypot(nx, ny)).toBeCloseTo(1, 9);
   });
 });

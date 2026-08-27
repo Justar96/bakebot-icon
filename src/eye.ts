@@ -171,10 +171,27 @@ export function isBlinking(state: EyeState): boolean {
   return state.blinkQueue > 0 || state.blinkPhase < BLINK_CYCLE;
 }
 
+/* The largest step the springs integrate safely. The simulation drives itself
+ * at a fixed 1/240 s; anything coarser from an outside caller is subdivided
+ * rather than allowed to destabilise the stiff shell spring. */
+const MAX_INTEGRATION_STEP = 1 / 120;
+
+/* A spring holding NaN or Infinity never recovers on its own — every force
+ * computed from it is NaN too — so a poisoned value is reset to rest. */
+const healSpring = (spring: SpringValue): SpringValue =>
+  Number.isFinite(spring.position) && Number.isFinite(spring.velocity)
+    ? spring
+    : restingSpring();
+
 /**
  * One simulation step. Drift, saccade, collision, deformation, pupil lag and
  * lids are integrated together, so a blink can happen during a glance and a
  * corner splat can happen during a blink.
+ *
+ * The step is subdivided past `MAX_INTEGRATION_STEP` (the clock each substep
+ * sees still ends where the caller's clock ends), and a degenerate or
+ * non-finite step is refused outright — a zero step would otherwise divide
+ * the arrival speed by zero and stall the gaze dwell forever.
  */
 export function advanceEye(
   state: EyeState,
@@ -182,6 +199,37 @@ export function advanceEye(
   seconds: number,
   clock: number,
 ): void {
+  if (!Number.isFinite(seconds) || seconds <= 0) return;
+  const steps = Math.ceil(seconds / MAX_INTEGRATION_STEP);
+  const step = seconds / steps;
+  for (let i = 0; i < steps; i += 1) {
+    integrateEye(state, intent, step, clock - seconds + step * (i + 1));
+  }
+}
+
+function integrateEye(
+  state: EyeState,
+  intent: { x: number; y: number },
+  seconds: number,
+  clock: number,
+): void {
+  // Heal before integrating: one poisoned value would otherwise spread through
+  // every spring in a single step.
+  state.x = healSpring(state.x);
+  state.y = healSpring(state.y);
+  state.pupilX = healSpring(state.pupilX);
+  state.pupilY = healSpring(state.pupilY);
+  state.jellyX = healSpring(state.jellyX);
+  state.jellyY = healSpring(state.jellyY);
+  if (!Number.isFinite(state.blinkPhase)) state.blinkPhase = BLINK_CYCLE;
+  if (!Number.isFinite(state.blinkQueue)) state.blinkQueue = 0;
+  if (!Number.isFinite(state.blinkStrength)) state.blinkStrength = 1;
+
+  // A non-finite intent or clock reads as noise, not as a place to look.
+  const time = Number.isFinite(clock) ? clock : 0;
+  const lookIntentX = Number.isFinite(intent.x) ? intent.x : 0;
+  const lookIntentY = Number.isFinite(intent.y) ? intent.y : 0;
+
   const wasFree = state.contact < 0.5;
   const wasPressed = state.press;
   const fromX = state.x.position;
@@ -191,26 +239,26 @@ export function advanceEye(
   // drift and one fast small wave for tremor; without them a settled eye reads
   // as a frozen image rather than as a live one.
   const driftX =
-    Math.sin(clock * 0.83) * 0.3 +
-    Math.sin(clock * 1.97 + 1.1) * 0.16 +
-    Math.sin(clock * 11.3) * 0.045;
+    Math.sin(time * 0.83) * 0.3 +
+    Math.sin(time * 1.97 + 1.1) * 0.16 +
+    Math.sin(time * 11.3) * 0.045;
   const driftY =
-    Math.cos(clock * 0.71 + 0.4) * 0.28 +
-    Math.cos(clock * 2.31 + 2.2) * 0.14 +
-    Math.cos(clock * 12.7) * 0.045;
-  const lookX = intent.x + driftX;
-  const lookY = intent.y + driftY;
+    Math.cos(time * 0.71 + 0.4) * 0.28 +
+    Math.cos(time * 2.31 + 2.2) * 0.14 +
+    Math.cos(time * 12.7) * 0.045;
+  const lookX = lookIntentX + driftX;
+  const lookY = lookIntentY + driftY;
   const lookLength = Math.hypot(lookX, lookY);
 
   // The shell takes only what is left of the intent past its deadzone, so a
   // short glance moves the pupil alone and the mark keeps its centre. Drift is
   // added after the deadzone rather than through it: a resting shell should
   // still breathe, not stop dead.
-  const intentLength = Math.hypot(intent.x, intent.y);
+  const intentLength = Math.hypot(lookIntentX, lookIntentY);
   const shellShare =
     intentLength > 1e-6 ? Math.max(intentLength - SHELL_DEADZONE, 0) / intentLength : 0;
-  const aimX = intent.x * shellShare + driftX;
-  const aimY = intent.y * shellShare + driftY;
+  const aimX = lookIntentX * shellShare + driftX;
+  const aimY = lookIntentY * shellShare + driftY;
 
   state.x = stepSpring(state.x, aimX, seconds, GAZE_SPRING);
   state.y = stepSpring(state.y, aimY, seconds, GAZE_SPRING);
@@ -292,13 +340,13 @@ export function advanceEye(
   let pupilTargetX =
     lookX * aimShare * PUPIL_RANGE +
     state.normalX * state.press * PUPIL_POOL +
-    Math.sin(clock * 1.61 + 0.7) * 0.22 +
-    Math.sin(clock * 3.7 + 2.3) * 0.1;
+    Math.sin(time * 1.61 + 0.7) * 0.22 +
+    Math.sin(time * 3.7 + 2.3) * 0.1;
   let pupilTargetY =
     lookY * aimShare * PUPIL_RANGE +
     state.normalY * state.press * PUPIL_POOL +
-    Math.cos(clock * 1.43 + 1.9) * 0.2 +
-    Math.cos(clock * 4.1 + 0.5) * 0.09;
+    Math.cos(time * 1.43 + 1.9) * 0.2 +
+    Math.cos(time * 4.1 + 0.5) * 0.09;
   const reachLength = Math.hypot(pupilTargetX, pupilTargetY);
   if (reachLength > PUPIL_LIMIT) {
     pupilTargetX = (pupilTargetX / reachLength) * PUPIL_LIMIT;
@@ -306,6 +354,16 @@ export function advanceEye(
   }
   state.pupilX = stepSpring(state.pupilX, pupilTargetX, seconds, PUPIL_SPRING);
   state.pupilY = stepSpring(state.pupilY, pupilTargetY, seconds, PUPIL_SPRING);
+
+  // The target is clamped to PUPIL_LIMIT and the spring's overshoot stays
+  // inside the eye; this is the hard net behind both, so the pupil cannot
+  // cross the shell's rim no matter how the state was arrived at.
+  const pupilLength = Math.hypot(state.pupilX.position, state.pupilY.position);
+  if (pupilLength > TILE.eye - TILE.pupil) {
+    const scale = (TILE.eye - TILE.pupil) / pupilLength;
+    state.pupilX.position *= scale;
+    state.pupilY.position *= scale;
+  }
 
   if (state.blinkQueue > 0 && state.blinkPhase >= BLINK_CYCLE) {
     state.blinkPhase = 0;

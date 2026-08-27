@@ -54,6 +54,9 @@ export function GisxIcon({
   gazeIntents,
 }: GisxIconProps) {
   const appearance = paneStateName(state);
+  // A degenerate size from a plain-JS caller (NaN, 0, negative) must not reach
+  // the DOM as an invalid width/height attribute.
+  const safeSize = Number.isFinite(size) && size > 0 ? size : 32;
   const stateGaze = STATE_GAZE[appearance];
   const motion = useIdleMotion(stateGaze && (gazeIntents ?? stateGaze));
   const style = config?.color
@@ -69,11 +72,11 @@ export function GisxIcon({
       // The simulation writes the motion layers every frame, so their state
       // transition must be off while it runs and on for the hand-off out.
       data-live={stateGaze ? "" : undefined}
-      height={size}
+      height={safeSize}
       role={label ? "img" : undefined}
       style={style}
       viewBox="0 0 64 64"
-      width={size}
+      width={safeSize}
       xmlns="http://www.w3.org/2000/svg"
     >
       <rect className="gisx-icon__tile" height="60" rx="16" width="60" x="2" y="2" />

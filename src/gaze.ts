@@ -69,6 +69,9 @@ const MAX_INTENT_HOLD = 30;
  * JavaScript and data loaded from files.
  */
 export function normalizeGazeIntents(intents: readonly GazeIntent[]): readonly GazeIntent[] {
+  // A non-array from a plain-JS caller (a number, an object) is not iterable;
+  // refuse it rather than throw during render.
+  if (!Array.isArray(intents)) return DEFAULT_GAZE_INTENTS;
   const normalized: GazeIntent[] = [];
   for (const intent of intents) {
     if (

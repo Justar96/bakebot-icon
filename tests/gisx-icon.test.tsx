@@ -90,4 +90,25 @@ describe("the gisx icon", () => {
     expect(html).toContain('class="gisx-icon__pupil-pose"');
     expect(html).toContain('class="gisx-icon__pupil-motion"');
   });
+
+  it("sanitises a degenerate size to the default instead of emitting NaN", () => {
+    // A plain-JS caller can pass anything; an invalid width would otherwise
+    // reach the DOM and React would warn about NaN attributes.
+    expect(renderToStaticMarkup(<GisxIcon size={Number.NaN} />)).toContain('width="32"');
+    expect(renderToStaticMarkup(<GisxIcon size={0} />)).toContain('width="32"');
+    expect(renderToStaticMarkup(<GisxIcon size={-16} />)).toContain('height="32"');
+    expect(renderToStaticMarkup(<GisxIcon size={48} />)).toContain('width="48"');
+  });
+
+  it("degrades an unknown runtime state to a neutral, still mark", () => {
+    // A state added to the wire before the icon knows it must not crash the
+    // mark or leave it half-alive: no gaze means no simulation and no
+    // data-live, and the pose stays the neutral default.
+    const unknown = "Booting" as unknown as GisxIconPaneState;
+    const html = renderToStaticMarkup(<GisxIcon state={unknown} />);
+
+    expect(html).toContain('data-state="Booting"');
+    expect(html).not.toContain("data-live");
+    expect(html.match(/<circle/g)).toHaveLength(2);
+  });
 });

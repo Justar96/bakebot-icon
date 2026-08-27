@@ -89,7 +89,14 @@ export function useIdleMotion(intents: readonly GazeIntent[] | null): IdleMotion
   // depend on what the gaze data says rather than on which array object said
   // it. A caller computing its points of interest passes a fresh array every
   // render, and identity alone would rebuild the world each time.
-  const gazeKey = JSON.stringify(intents);
+  // Cyclic runtime data from a plain-JS caller throws in stringify; fall back
+  // to a stable key and let normalisation drop what it cannot use.
+  let gazeKey: string;
+  try {
+    gazeKey = JSON.stringify(intents);
+  } catch {
+    gazeKey = "gisx-unserializable-gaze";
+  }
   const gaze = useMemo(() => (intents ? normalizeGazeIntents(intents) : null), [gazeKey]);
 
   useEffect(() => {
@@ -107,7 +114,12 @@ export function useIdleMotion(intents: readonly GazeIntent[] | null): IdleMotion
       return;
     }
 
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    // Non-browser DOMs may lack matchMedia; without it there is no reduced
+    // motion preference to honour, so the eye simply runs.
+    const reducedMotion =
+      typeof window.matchMedia === "function"
+        ? window.matchMedia("(prefers-reduced-motion: reduce)")
+        : null;
     const random = createRandom(SEED);
     const state = createEyeState();
 
@@ -221,7 +233,7 @@ export function useIdleMotion(intents: readonly GazeIntent[] | null): IdleMotion
     };
 
     const start = () => {
-      if (frame !== undefined || document.hidden || reducedMotion.matches) return;
+      if (frame !== undefined || document.hidden || reducedMotion?.matches) return;
       previous = performance.now();
       accumulator = 0;
       previousPose = readPose();
@@ -236,7 +248,7 @@ export function useIdleMotion(intents: readonly GazeIntent[] | null): IdleMotion
 
     const handlePreference = () => {
       stop();
-      if (reducedMotion.matches) {
+      if (reducedMotion?.matches) {
         clearTransforms();
         written.fill("");
       } else {
@@ -245,13 +257,13 @@ export function useIdleMotion(intents: readonly GazeIntent[] | null): IdleMotion
     };
     const handleVisibility = () => (document.hidden ? stop() : start());
 
-    reducedMotion.addEventListener("change", handlePreference);
+    reducedMotion?.addEventListener("change", handlePreference);
     document.addEventListener("visibilitychange", handleVisibility);
     start();
 
     return () => {
       stop();
-      reducedMotion.removeEventListener("change", handlePreference);
+      reducedMotion?.removeEventListener("change", handlePreference);
       document.removeEventListener("visibilitychange", handleVisibility);
       clearTransforms();
     };

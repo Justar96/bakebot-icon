@@ -35,11 +35,14 @@ export const smoothstep = (edge0: number, edge1: number, value: number) => {
 
 /** Signed distance to a rounded rectangle centred on the origin. */
 export function roundedRectDistance(x: number, y: number, half: number, radius: number): number {
-  const qx = Math.abs(x) - half + radius;
-  const qy = Math.abs(y) - half + radius;
+  // A corner radius past the half extent is degenerate; clamp it so the field
+  // stays a rounded rectangle rather than turning inside out.
+  const r = Math.min(Math.max(radius, 0), half);
+  const qx = Math.abs(x) - half + r;
+  const qy = Math.abs(y) - half + r;
   const outside = Math.hypot(Math.max(qx, 0), Math.max(qy, 0));
   const inside = Math.min(Math.max(qx, qy), 0);
-  return outside + inside - radius;
+  return outside + inside - r;
 }
 
 /**
@@ -53,8 +56,9 @@ export function boundaryNormal(
   half: number,
   radius: number,
 ): [number, number] {
-  const qx = Math.abs(x) - half + radius;
-  const qy = Math.abs(y) - half + radius;
+  const r = Math.min(Math.max(radius, 0), half);
+  const qx = Math.abs(x) - half + r;
+  const qy = Math.abs(y) - half + r;
   const nx = Math.sign(x) * Math.max(qx, 0);
   const ny = Math.sign(y) * Math.max(qy, 0);
   const length = Math.hypot(nx, ny);
