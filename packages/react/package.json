@@ -1,0 +1,49 @@
+{
+  "name": "gisx-icon",
+  "version": "0.2.0",
+  "license": "MIT",
+  "type": "module",
+  "description": "Living gisx mascot: programmatic motion, fluid physics, one-line wiring.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Justar96/gisx-icon.git",
+    "directory": "packages/react"
+  },
+  "homepage": "https://github.com/Justar96/gisx-icon",
+  "bugs": {
+    "url": "https://github.com/Justar96/gisx-icon/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./gisx-icon.css": "./dist/gisx-icon.css",
+    "./package.json": "./package.json"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "bun scripts/build.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@gisx-icon/core": "workspace:^"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "typescript": "catalog:"
+  }
+}

@@ -1,5 +1,5 @@
 import { ATTENTIVE_GAZE_INTENTS, DEFAULT_GAZE_INTENTS } from "./gaze";
-import type { GazeIntent, GisxIconState } from "./types";
+import type { GazeIntent, GisxIconState } from "./protocol";
 
 /**
  * What each state means to the simulation.

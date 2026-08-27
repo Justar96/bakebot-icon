@@ -23,7 +23,7 @@ import {
 } from "./eye";
 import { createRandom, nextIntentIndex, normalizeGazeIntents } from "./gaze";
 import { DEFAULT_RESOLVED, resolveTuning, type MascotTuning, type ResolvedTuning } from "./tuning";
-import type { GazeIntent } from "./types";
+import type { GazeIntent } from "./protocol";
 
 /* One fixed step keeps the springs and the collision response identical on a
  * 60 Hz panel and a 144 Hz one; the accumulator absorbs the difference. */

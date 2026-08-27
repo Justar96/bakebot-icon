@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    /*
+     * Dev, test and typecheck resolve the character from its source, so there
+     * is never a stale `dist` to rebuild before running tests.
+     *
+     * `paths` is the mechanism deliberately, rather than an `exports`
+     * condition on core pointing at `src`: a condition ships inside the
+     * published manifest, and a consumer resolving through it would bypass
+     * core's built output entirely — or fail outright, since `src` is not in
+     * core's `files`. The published artifacts resolve through core's own
+     * `exports` to `dist`, which is what a consumer should get.
+     *
+     * Bun's runtime, its test runner and its serve-time bundler all honour
+     * this, though none of them document that they do — `verify-tarballs.ts`
+     * is what proves the published side independently.
+     */
+    "paths": {
+      "@gisx-icon/core": ["../core/src/index.ts"]
+    }
+  },
+  "include": ["src", "tests", "scripts"]
+}

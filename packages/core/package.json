@@ -1,0 +1,48 @@
+{
+  "name": "@gisx-icon/core",
+  "version": "0.2.0",
+  "license": "MIT",
+  "type": "module",
+  "description": "The gisx mascot's character: a headless spring simulation with no renderer.",
+  "keywords": [
+    "gisx",
+    "mascot",
+    "spring",
+    "physics",
+    "headless",
+    "animation"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Justar96/gisx-icon.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/Justar96/gisx-icon",
+  "bugs": {
+    "url": "https://github.com/Justar96/gisx-icon/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "bun scripts/build.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:",
+    "typescript": "catalog:"
+  }
+}

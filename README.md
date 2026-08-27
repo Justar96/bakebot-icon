@@ -67,10 +67,10 @@ Physics is still the mascot's: tuning moves dials inside a region that is known 
 
 ### Headless
 
-The character does not need React. `createMascot` is the same simulation with no renderer attached — call `advance` with elapsed seconds and write what `pose` returns.
+The character does not need React. `createMascot` is the same simulation with no renderer attached — call `advance` with elapsed seconds and write what `pose` returns. It lives in `@gisx-icon/core`, which carries no dependencies and knows nothing about the DOM; `gisx-icon` re-exports it, so React callers need not install it separately.
 
 ```ts
-import { createMascot, DEFAULT_GAZE_INTENTS } from "gisx-icon";
+import { createMascot, DEFAULT_GAZE_INTENTS } from "@gisx-icon/core";
 
 const mascot = createMascot({ intents: DEFAULT_GAZE_INTENTS, seed: 7 });
 mascot.advance(1 / 60);
@@ -85,15 +85,46 @@ const { x, y, angle, stretch, squash, lid, dilation } = mascot.pose();
 bun add gisx-icon
 ```
 
-Peer dependency: `react` ^19.
+Peer dependency: `react` ^19. `@gisx-icon/core` comes along with it.
+
+For a renderer that is not React — canvas, Solid, a terminal — take the character alone:
+
+```bash
+bun add @gisx-icon/core
+```
+
+## Repository
+
+Two published packages and one app that is not published.
+
+| Path | Package | What it is |
+| --- | --- | --- |
+| `packages/core` | `@gisx-icon/core` | The character: springs, collision, the eye, the mascot driver, the tuning surface. No dependencies, no DOM. |
+| `packages/react` | `gisx-icon` | The React binding: the component, the stylesheet, the hook that writes a pose to transforms. |
+| `apps/playground` | — | Every state side by side, with a slider for every dial. |
+
+The split is the reason tuning can be a supported surface: the physics has a package boundary of its own, and what that package exports is deliberately smaller than what it contains. The integrator, the distance field, and the eye's step function stay private, which is what makes retuning them a non-breaking change.
 
 ## Develop
 
 ```bash
 bun install
-bun test
+bun test          # every package, no test config anywhere
 bun run typecheck
-bun run build
+bun run build     # core, then the binding
+bun run play      # the playground on :3141
 ```
 
-Publish is `npm publish` from a clean build, or pushing a `v*` tag once `NPM_TOKEN` is set on the repo.
+Tests and typechecks resolve `@gisx-icon/core` to its **source** through tsconfig `paths`, so nothing needs building first. The declaration build resolves it to `dist` instead — that is the resolution a consumer performs, so the published types are checked against the published types.
+
+```bash
+bun run verify:tarballs
+```
+
+That is the gate worth knowing about. Everything else tests the workspace; this packs both packages, installs the tarballs into a scratch project outside the workspace, and checks what a consumer actually receives: no `workspace:` or `catalog:` protocol left in either manifest, the binding's pin on the character matching the version being shipped, a consumer typechecking against the published declarations, the eye's fills still falling back to literals, and every export that existed in 0.2.0 still present.
+
+## Publish
+
+Push a `v*` tag with `NPM_TOKEN` set on the repo. The tag has to match both package versions or the workflow stops.
+
+Bun packs and npm publishes, which is not arbitrary. npm does not rewrite `workspace:` or `catalog:`, so publishing from source would ship an unresolvable manifest; `bun publish` has no `--provenance`, so publishing with Bun would ship unattested. `bun pm pack` into `npm publish <tarball>` is the only combination that gets both. Because npm skips lifecycle scripts when handed a tarball path, every gate is an explicit step in [`.github/workflows/publish.yml`](./.github/workflows/publish.yml) — a `prepublishOnly` there would silently not run.

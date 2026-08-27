@@ -1,7 +1,6 @@
 import { useEffect, useRef, type RefObject } from "react";
 
-import { createMascot, type Mascot } from "./mascot";
-import type { MascotTuning } from "./tuning";
+import { createMascot, type Mascot, type MascotTuning } from "@gisx-icon/core";
 import type { GazeIntent } from "./types";
 
 /**

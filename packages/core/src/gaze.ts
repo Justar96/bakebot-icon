@@ -8,7 +8,7 @@
  */
 
 import { clamp } from "./geometry";
-import type { GazeIntent } from "./types";
+import type { GazeIntent } from "./protocol";
 
 /**
  * The look length that fills the pupil's whole range, and the scale the

@@ -1,46 +1,29 @@
 {
-  "name": "gisx-icon",
-  "version": "0.2.0",
-  "license": "MIT",
+  "name": "gisx-icon-monorepo",
+  "private": true,
   "type": "module",
-  "description": "Living gisx mascot: programmatic motion, fluid physics, one-line wiring.",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Justar96/gisx-icon.git"
+  "license": "MIT",
+  "description": "The gisx mascot: a headless character package and its React binding.",
+  "workspaces": {
+    "packages": ["packages/*", "apps/*"],
+    "catalog": {
+      "@types/bun": "^1.3.14",
+      "@types/react": "^19.2.0",
+      "@types/react-dom": "^19.2.0",
+      "react": "^19.2.0",
+      "react-dom": "^19.2.0",
+      "typescript": "^7.0.2"
+    }
   },
-  "homepage": "https://github.com/Justar96/gisx-icon",
-  "bugs": {
-    "url": "https://github.com/Justar96/gisx-icon/issues"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "sideEffects": true,
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./gisx-icon.css": "./dist/gisx-icon.css"
-  },
-  "files": ["dist"],
   "scripts": {
-    "build": "bun scripts/build.ts",
-    "prepublishOnly": "bun test && bun run typecheck && bun run build",
     "test": "bun test",
-    "typecheck": "tsc --noEmit"
-  },
-  "peerDependencies": {
-    "react": "^19.0.0"
+    "typecheck": "bun run --filter '*' typecheck",
+    "build": "bun run --filter '@gisx-icon/core' build && bun run --filter 'gisx-icon' build",
+    "play": "bun run --filter '@gisx-icon/playground' dev",
+    "verify:tarballs": "bun scripts/verify-tarballs.ts"
   },
   "devDependencies": {
-    "@types/bun": "^1.3.14",
-    "@types/react": "^19.2.0",
-    "@types/react-dom": "^19.2.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "typescript": "^7.0.2"
+    "@types/bun": "catalog:",
+    "typescript": "catalog:"
   }
 }

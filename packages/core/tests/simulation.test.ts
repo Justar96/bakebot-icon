@@ -39,7 +39,7 @@ import {
 } from "../src/geometry";
 import { stepSpring } from "../src/spring";
 import { STATE_GAZE } from "../src/states";
-import type { GazeIntent } from "../src/types";
+import type { GazeIntent } from "../src/protocol";
 
 const STEP = 1 / 240;
 const CORNER = { x: 26, y: -26 };

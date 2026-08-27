@@ -1,0 +1,27 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.0
+      - run: bun install --frozen-lockfile
+
+      # The same order and the same gates the publish workflow runs, so a tag
+      # never discovers a failure for the first time.
+      - run: bun run --filter '@gisx-icon/core' build
+      - run: bun run --filter 'gisx-icon' build
+      - run: bun test
+      - run: bun run typecheck
+      - run: bun run verify:tarballs

@@ -3,8 +3,7 @@
 import type { CSSProperties } from "react";
 
 import "./gisx-icon.css";
-import { STATE_GAZE } from "./states";
-import type { MascotTuning } from "./tuning";
+import { STATE_GAZE, type MascotTuning } from "@gisx-icon/core";
 import type { GazeIntent, GisxIconConfig, GisxIconPaneState, GisxIconState } from "./types";
 import { useEyeMotion } from "./useEyeMotion";
 

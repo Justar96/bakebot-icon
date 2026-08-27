@@ -1,0 +1,22 @@
+{
+  "name": "@gisx-icon/playground",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Live tuning surface for the gisx mascot. Not published.",
+  "scripts": {
+    "dev": "bun run src/serve.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "gisx-icon": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "typescript": "catalog:"
+  }
+}

@@ -96,7 +96,14 @@
 
 /* State controls pose and motion. Colour stays neutral unless the caller
  * supplies a configured colour. */
-.gisx-icon[data-state="Idle"] {}
+/* A declaration rather than an empty rule. Bun's CSS transformer discards
+ * rules that carry nothing — inherited from LightningCSS, and deliberate
+ * upstream — so an empty marker vanishes the moment the stylesheet is bundled
+ * by anyone. The custom property is a better marker anyway: it is readable
+ * from script and from a test. */
+.gisx-icon[data-state="Idle"] {
+  --gisx-state: idle;
+}
 
 /* A working eye scans a short local range. That range is `ATTENTIVE_GAZE_INTENTS`
  * in the simulation, not a keyframe here — one animator per moving part. */
