@@ -91,6 +91,22 @@ _Avoid_: Wink, fade, blink animation
 **Flinch**:
 A fast partial blink caused by a hard corner impact.
 
+**Mascot (the driver)**:
+The character with no renderer attached: one clock, the gaze scheduler, the blink cadence, and a readable pose. A renderer calls it and writes what it reads, so a second renderer gets the same character rather than a second version of one.
+_Avoid_: Engine, controller, store, machine
+
+**Pose (the readout)**:
+What the driver hands a renderer for one frame, already interpolated between fixed steps. Distinct from the CSS Pose of a pane state, which writes different elements.
+_Avoid_: Frame, snapshot, state (the simulation's own word is Simulation)
+
+**Tuning**:
+The dials a caller may turn on the motion: the four springs, how much the eye squishes, how restless it is, how often it blinks, and how far a look must reach before the shell answers. A spring is named by frequency and damping ratio rather than stiffness and damping, because those can be clamped into a region the integrator is provably stable in.
+_Avoid_: Physics config, spring config, easing, preset
+
+**Seed**:
+What makes one mascot's run reproducible, and what makes two mascots on a page different from each other. A seed alone is not enough for the second: each mascot also offsets its own clock, because drift and tremor are functions of time rather than of the random stream.
+_Avoid_: Random, id, key, instance
+
 ## Use
 
 **Wiring**:
@@ -102,5 +118,5 @@ Caller-chosen look that is not pane state. Colour is config; where the eye looks
 _Avoid_: Theme, skin, settings, options, style
 
 **Customization**:
-What a caller may change without forking: size, colour, accessible name, and the places the eye looks while it is alive. Physics stays the mascot's.
+What a caller may change without forking: size, colour, accessible name, the places the eye looks while it is alive, the seed of its run, and the tuning of its motion. The physics is still the mascot's — tuning moves dials inside a stable region, it does not hand a caller the integrator.
 _Avoid_: Theming, restyling, skinning, forking

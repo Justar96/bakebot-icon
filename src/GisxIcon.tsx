@@ -4,6 +4,7 @@ import type { CSSProperties } from "react";
 
 import "./gisx-icon.css";
 import { STATE_GAZE } from "./states";
+import type { MascotTuning } from "./tuning";
 import type { GazeIntent, GisxIconConfig, GisxIconPaneState, GisxIconState } from "./types";
 import { useEyeMotion } from "./useEyeMotion";
 
@@ -24,6 +25,19 @@ export interface GisxIconProps {
    * alive, and this decides only where it looks while it is.
    */
   gazeIntents?: readonly GazeIntent[];
+  /**
+   * How the mascot moves. Every dial is optional and is clamped into a region
+   * the simulation is stable in, so this adjusts a character rather than
+   * replacing one — `tuning.ts` says what each dial means.
+   */
+  tuning?: Partial<MascotTuning>;
+  /**
+   * Fix this mascot's run. Two mascots on a page already look different from
+   * each other because each draws its own seed and clock phase; passing one
+   * makes a run reproducible, which is what a visual test wants and what a
+   * page does not need.
+   */
+  seed?: number;
 }
 
 function paneStateName(state: GisxIconPaneState): GisxIconState {
@@ -51,13 +65,15 @@ export function GisxIcon({
   label,
   config,
   gazeIntents,
+  tuning,
+  seed,
 }: GisxIconProps) {
   const appearance = paneStateName(state);
   // A degenerate size from a plain-JS caller (NaN, 0, negative) must not reach
   // the DOM as an invalid width/height attribute.
   const safeSize = Number.isFinite(size) && size > 0 ? size : 32;
   const stateGaze = STATE_GAZE[appearance];
-  const motion = useEyeMotion(stateGaze && (gazeIntents ?? stateGaze));
+  const motion = useEyeMotion(stateGaze && (gazeIntents ?? stateGaze), { seed, tuning });
   const style = config?.color
     ? ({ "--gisx-icon-color": config.color } as CSSProperties)
     : undefined;

@@ -19,19 +19,22 @@ import {
   travelNormal,
 } from "./geometry";
 import { restingSpring, stepSpring, type SpringConfig, type SpringValue } from "./spring";
+import { DEFAULT_RESOLVED, type ResolvedTuning } from "./tuning";
 
 /* Springs. Each is under-damped on purpose and the damping ratio is what
  * separates them. The shell is nearly critical, so a saccade lands with one
  * small glissade. The pupil is loose, so the interior lags the shell. The
  * jelly is loose enough to ring, which is where the wobble after an impact
- * comes from — it is not an animation, it is the spring returning to rest. */
-const GAZE_SPRING: SpringConfig = { stiffness: 420, damping: 34 };
-const PUPIL_SPRING: SpringConfig = { stiffness: 150, damping: 16 };
-/* Free in the air the jelly rings; in contact it is viscous and settles into
- * the shape of what it is pressed against. Interpolating the damping by how
- * much of the eye is touching is what separates a bouncing ball from a drop. */
-const JELLY_FREE: SpringConfig = { stiffness: 165, damping: 11 };
-const JELLY_CONTACT: SpringConfig = { stiffness: 165, damping: 26 };
+ * comes from — it is not an animation, it is the spring returning to rest.
+ *
+ * The numbers themselves are `tuning.ts`, which is also where a caller may
+ * move them. They arrive here already clamped into a stable region, so this
+ * module never has to ask whether a spring it was handed is integrable.
+ *
+ * Free in the air the jelly rings; in contact it is viscous and settles into
+ * the shape of what it is pressed against. Interpolating between the two by
+ * how much of the eye is touching is what separates a bouncing ball from a
+ * drop. */
 
 /* Deformation. The jelly vector's direction is the stretch axis and its length
  * is the amount; the perpendicular axis takes the reciprocal, so area is
@@ -55,8 +58,8 @@ const PRESS_REACH = 7;
  * every glance and reaches the edge of its own range at LOOK_REACH; the shell
  * ignores anything shorter than its deadzone and only follows what is left, so
  * the mascot rests near the centre and the life is in the pupil. Only a look far
- * past the deadzone drags the shell out to the border. */
-const SHELL_DEADZONE = 9;
+ * past the deadzone drags the shell out to the border. The deadzone itself is
+ * a dial in `tuning.ts`. */
 const PUPIL_RANGE = 6.2;
 /** While pressed, the pupil piles toward the contact point. */
 const PUPIL_POOL = 1;
@@ -198,12 +201,13 @@ export function advanceEye(
   intent: { x: number; y: number },
   seconds: number,
   clock: number,
+  tuning: ResolvedTuning = DEFAULT_RESOLVED,
 ): void {
   if (!Number.isFinite(seconds) || seconds <= 0) return;
   const steps = Math.ceil(seconds / MAX_INTEGRATION_STEP);
   const step = seconds / steps;
   for (let i = 0; i < steps; i += 1) {
-    integrateEye(state, intent, step, clock - seconds + step * (i + 1));
+    integrateEye(state, intent, step, clock - seconds + step * (i + 1), tuning);
   }
 }
 
@@ -212,6 +216,7 @@ function integrateEye(
   intent: { x: number; y: number },
   seconds: number,
   clock: number,
+  tuning: ResolvedTuning,
 ): void {
   // Heal before integrating: one poisoned value would otherwise spread through
   // every spring in a single step.
@@ -238,14 +243,17 @@ function integrateEye(
   // An eye is never still. Two slow incommensurate waves stand in for ocular
   // drift and one fast small wave for tremor; without them a settled eye reads
   // as a frozen image rather than as a live one.
+  const restlessness = tuning.restlessness;
   const driftX =
-    Math.sin(time * 0.83) * 0.3 +
-    Math.sin(time * 1.97 + 1.1) * 0.16 +
-    Math.sin(time * 11.3) * 0.045;
+    (Math.sin(time * 0.83) * 0.3 +
+      Math.sin(time * 1.97 + 1.1) * 0.16 +
+      Math.sin(time * 11.3) * 0.045) *
+    restlessness;
   const driftY =
-    Math.cos(time * 0.71 + 0.4) * 0.28 +
-    Math.cos(time * 2.31 + 2.2) * 0.14 +
-    Math.cos(time * 12.7) * 0.045;
+    (Math.cos(time * 0.71 + 0.4) * 0.28 +
+      Math.cos(time * 2.31 + 2.2) * 0.14 +
+      Math.cos(time * 12.7) * 0.045) *
+    restlessness;
   const lookX = lookIntentX + driftX;
   const lookY = lookIntentY + driftY;
   const lookLength = Math.hypot(lookX, lookY);
@@ -256,12 +264,12 @@ function integrateEye(
   // still breathe, not stop dead.
   const intentLength = Math.hypot(lookIntentX, lookIntentY);
   const shellShare =
-    intentLength > 1e-6 ? Math.max(intentLength - SHELL_DEADZONE, 0) / intentLength : 0;
+    intentLength > 1e-6 ? Math.max(intentLength - tuning.shellDeadzone, 0) / intentLength : 0;
   const aimX = lookIntentX * shellShare + driftX;
   const aimY = lookIntentY * shellShare + driftY;
 
-  state.x = stepSpring(state.x, aimX, seconds, GAZE_SPRING);
-  state.y = stepSpring(state.y, aimY, seconds, GAZE_SPRING);
+  state.x = stepSpring(state.x, aimX, seconds, tuning.gaze);
+  state.y = stepSpring(state.y, aimY, seconds, tuning.gaze);
 
   const contact = resolveBoundary(
     state.x.position,
@@ -297,14 +305,17 @@ function integrateEye(
   // rather than directions, and they are summed in double-angle space where a
   // half turn is the identity — see `deformation`.
   const speed = Math.hypot(state.x.velocity, state.y.velocity);
-  const flight = speed > 1e-6 ? VELOCITY_STRETCH / speed : 0;
-  const spread = state.press * PRESS_SPREAD;
+  const squish = tuning.squish;
+  const flight = speed > 1e-6 ? (VELOCITY_STRETCH * squish) / speed : 0;
+  const spread = state.press * PRESS_SPREAD * squish;
   const wallX = state.normalX * state.normalX - state.normalY * state.normalY;
   const wallY = 2 * state.normalX * state.normalY;
 
+  const free = tuning.jellyFree;
+  const held = tuning.jellyContact;
   const jelly: SpringConfig = {
-    stiffness: JELLY_FREE.stiffness,
-    damping: JELLY_FREE.damping + (JELLY_CONTACT.damping - JELLY_FREE.damping) * state.contact,
+    stiffness: free.stiffness + (held.stiffness - free.stiffness) * state.contact,
+    damping: free.damping + (held.damping - free.damping) * state.contact,
   };
   state.jellyX = stepSpring(
     state.jellyX,
@@ -323,7 +334,7 @@ function integrateEye(
   // An impact adds energy rather than moving the rest pose, so the splat and
   // the ringing that follows it are one spring rather than two animations.
   if (state.impact > IMPACT_FLOOR) {
-    const gain = IMPACT_GAIN * state.impact * (1 + CORNER_BOOST * state.cornerness);
+    const gain = IMPACT_GAIN * squish * state.impact * (1 + CORNER_BOOST * state.cornerness);
     state.jellyX.velocity -= wallX * gain;
     state.jellyY.velocity -= wallY * gain;
   }
@@ -340,20 +351,18 @@ function integrateEye(
   let pupilTargetX =
     lookX * aimShare * PUPIL_RANGE +
     state.normalX * state.press * PUPIL_POOL +
-    Math.sin(time * 1.61 + 0.7) * 0.22 +
-    Math.sin(time * 3.7 + 2.3) * 0.1;
+    (Math.sin(time * 1.61 + 0.7) * 0.22 + Math.sin(time * 3.7 + 2.3) * 0.1) * restlessness;
   let pupilTargetY =
     lookY * aimShare * PUPIL_RANGE +
     state.normalY * state.press * PUPIL_POOL +
-    Math.cos(time * 1.43 + 1.9) * 0.2 +
-    Math.cos(time * 4.1 + 0.5) * 0.09;
+    (Math.cos(time * 1.43 + 1.9) * 0.2 + Math.cos(time * 4.1 + 0.5) * 0.09) * restlessness;
   const reachLength = Math.hypot(pupilTargetX, pupilTargetY);
   if (reachLength > PUPIL_LIMIT) {
     pupilTargetX = (pupilTargetX / reachLength) * PUPIL_LIMIT;
     pupilTargetY = (pupilTargetY / reachLength) * PUPIL_LIMIT;
   }
-  state.pupilX = stepSpring(state.pupilX, pupilTargetX, seconds, PUPIL_SPRING);
-  state.pupilY = stepSpring(state.pupilY, pupilTargetY, seconds, PUPIL_SPRING);
+  state.pupilX = stepSpring(state.pupilX, pupilTargetX, seconds, tuning.pupil);
+  state.pupilY = stepSpring(state.pupilY, pupilTargetY, seconds, tuning.pupil);
 
   // The target is clamped to PUPIL_LIMIT and the spring's overshoot stays
   // inside the eye; this is the hard net behind both, so the pupil cannot
