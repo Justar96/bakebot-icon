@@ -14,7 +14,7 @@ import type { GazeIntent, GisxIconState } from "./types";
  * already shut it.
  *
  * The record is exhaustive by type: a state added to the wire fails to compile
- * here until someone has decided how the mark behaves in it. That is the point
+ * here until someone has decided how the mascot behaves in it. That is the point
  * of `GisxIconState` being the protocol's own vocabulary rather than a list
  * beside it.
  */

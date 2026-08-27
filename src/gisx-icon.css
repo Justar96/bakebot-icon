@@ -1,4 +1,4 @@
-/* The gisx mark: a stable rounded tile and one eye made from two circles. */
+/* The gisx mascot: a stable rounded tile and one eye made from two circles. */
 
 .gisx-icon {
   /* Brand colour is independent from state. A caller can replace this token
@@ -68,7 +68,7 @@
   fill: var(--window-bg);
 }
 
-/* These are the only layers written by the idle simulation. When idle ends,
+/* These are the only layers written by the simulation. When life ends,
  * their inline values return to rest through the same gentle state curve. */
 .gisx-icon__eye-motion,
 .gisx-icon__expression-motion,

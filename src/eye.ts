@@ -1,5 +1,5 @@
 /**
- * What the eye does. Everything here is pure and DOM-free; `useIdleMotion`
+ * What the eye does. Everything here is pure and DOM-free; `useEyeMotion`
  * owns the clock and the writes.
  *
  * The eye is one mass on a stiff spring, confined to the travel region in
@@ -35,7 +35,7 @@ const JELLY_CONTACT: SpringConfig = { stiffness: 165, damping: 26 };
 
 /* Deformation. The jelly vector's direction is the stretch axis and its length
  * is the amount; the perpendicular axis takes the reciprocal, so area is
- * preserved and the mark never gains visual weight. */
+ * preserved and the mascot never gains visual weight. */
 const VELOCITY_STRETCH = 0.0019;
 const PRESS_SPREAD = 0.26;
 const IMPACT_GAIN = 0.03;
@@ -54,7 +54,7 @@ const PRESS_REACH = 7;
 /* Looking is shared between the two circles, and not evenly. The pupil does
  * every glance and reaches the edge of its own range at LOOK_REACH; the shell
  * ignores anything shorter than its deadzone and only follows what is left, so
- * the mark rests near the centre and the life is in the pupil. Only a look far
+ * the mascot rests near the centre and the life is in the pupil. Only a look far
  * past the deadzone drags the shell out to the border. */
 const SHELL_DEADZONE = 9;
 const PUPIL_RANGE = 6.2;
@@ -251,7 +251,7 @@ function integrateEye(
   const lookLength = Math.hypot(lookX, lookY);
 
   // The shell takes only what is left of the intent past its deadzone, so a
-  // short glance moves the pupil alone and the mark keeps its centre. Drift is
+  // short glance moves the pupil alone and the mascot keeps its centre. Drift is
   // added after the deadzone rather than through it: a resting shell should
   // still breathe, not stop dead.
   const intentLength = Math.hypot(lookIntentX, lookIntentY);

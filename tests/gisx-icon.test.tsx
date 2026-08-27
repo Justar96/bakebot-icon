@@ -1,7 +1,12 @@
 import { describe, expect, it } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import { GisxIcon, type GazeIntent, type GisxIconPaneState } from "../src/index";
+import {
+  ATTENTIVE_GAZE_INTENTS,
+  GisxIcon,
+  type GazeIntent,
+  type GisxIconPaneState,
+} from "../src/index";
 
 function paneStateName(state: GisxIconPaneState): string {
   return typeof state === "string" ? state : "Exited";
@@ -17,7 +22,7 @@ const STATES: GisxIconPaneState[] = [
   { Exited: { code: 1 } },
 ];
 
-describe("the gisx icon", () => {
+describe("the gisx mascot", () => {
   it("projects every pane state onto the same two-circle eye", () => {
     for (const state of STATES) {
       const html = renderToStaticMarkup(<GisxIcon state={state} />);
@@ -34,7 +39,7 @@ describe("the gisx icon", () => {
     // conversion and one of them would eventually differ.
     const html = renderToStaticMarkup(<GisxIcon state={{ Exited: { code: 130 } }} />);
     expect(html).toContain('data-state="Exited"');
-    // The code belongs to whatever shows the exit, not to the mark.
+    // The code belongs to whatever shows the exit, not to the mascot.
     expect(html).not.toContain("130");
   });
 
@@ -72,10 +77,13 @@ describe("the gisx icon", () => {
     expect(renderToStaticMarkup(<GisxIcon gazeIntents={gazeIntents} />)).toContain(
       'data-state="Idle"',
     );
+    expect(renderToStaticMarkup(<GisxIcon gazeIntents={ATTENTIVE_GAZE_INTENTS} />)).toContain(
+      'data-live=""',
+    );
   });
 
   it("carries no motion into the served markup", () => {
-    // Idle behaviour is simulated after mount, so the mark ships undeformed
+    // Motion is simulated after mount, so the mascot ships undeformed
     // and every other state is CSS alone.
     expect(renderToStaticMarkup(<GisxIcon />)).not.toContain("transform");
   });
@@ -100,9 +108,9 @@ describe("the gisx icon", () => {
     expect(renderToStaticMarkup(<GisxIcon size={48} />)).toContain('width="48"');
   });
 
-  it("degrades an unknown runtime state to a neutral, still mark", () => {
+  it("degrades an unknown runtime state to a neutral, still mascot", () => {
     // A state added to the wire before the icon knows it must not crash the
-    // mark or leave it half-alive: no gaze means no simulation and no
+    // mascot or leave it half-alive: no gaze means no simulation and no
     // data-live, and the pose stays the neutral default.
     const unknown = "Booting" as unknown as GisxIconPaneState;
     const html = renderToStaticMarkup(<GisxIcon state={unknown} />);

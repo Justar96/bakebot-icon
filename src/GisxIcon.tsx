@@ -5,22 +5,22 @@ import type { CSSProperties } from "react";
 import "./gisx-icon.css";
 import { STATE_GAZE } from "./states";
 import type { GazeIntent, GisxIconConfig, GisxIconPaneState, GisxIconState } from "./types";
-import { useIdleMotion } from "./useIdleMotion";
+import { useEyeMotion } from "./useEyeMotion";
 
 export interface GisxIconProps {
   /**
-   * A pane state straight off the model, payload included. The icon does its
+   * A pane state straight off the model, payload included. The mascot does its
    * own normalising, so a caller never converts one first — `<GisxIcon
    * state={entry.attention.state} />` is the whole wiring.
    */
   state?: GisxIconPaneState;
   size?: number;
   label?: string;
-  /** Visual options. Omit this to use the neutral gray brand colour. */
+  /** Look that is not pane state. Omit this to use the neutral gray. */
   config?: GisxIconConfig;
   /**
    * Places to look, overriding what the state would choose. A state whose pose
-   * has shut the eye stays shut: `STATE_GAZE` decides whether the mark is
+   * has shut the eye stays shut: `STATE_GAZE` decides whether the mascot is
    * alive, and this decides only where it looks while it is.
    */
   gazeIntents?: readonly GazeIntent[];
@@ -31,7 +31,7 @@ function paneStateName(state: GisxIconPaneState): GisxIconState {
 }
 
 /**
- * The gisx mark: one stable tile and an eye made from two circles.
+ * The gisx mascot: one stable tile and an eye made from two circles.
  *
  * Behaviour is a continuous simulation rather than a queue of clips. The eye
  * is a mass on a stiff spring confined to the tile inset by its own radius,
@@ -41,10 +41,9 @@ function paneStateName(state: GisxIconPaneState): GisxIconState {
  * glances overlap because there is only one clock.
  *
  * The state is painted in two layers that never write the same element. Colour
- * and pose are CSS, in `gisx-icon.css`, keyed on the `data-state` the
- * attention badge is keyed on; the life underneath comes from `STATE_GAZE`.
- * The nesting below is that division — each `__state-*` group holds a
- * `__*-motion` group.
+ * and pose are CSS, in `gisx-icon.css`, keyed on `data-state`; the life
+ * underneath comes from `STATE_GAZE`. The nesting below is that division —
+ * each `__state-*` group holds a `__*-motion` group.
  */
 export function GisxIcon({
   state = "Idle",
@@ -58,7 +57,7 @@ export function GisxIcon({
   // the DOM as an invalid width/height attribute.
   const safeSize = Number.isFinite(size) && size > 0 ? size : 32;
   const stateGaze = STATE_GAZE[appearance];
-  const motion = useIdleMotion(stateGaze && (gazeIntents ?? stateGaze));
+  const motion = useEyeMotion(stateGaze && (gazeIntents ?? stateGaze));
   const style = config?.color
     ? ({ "--gisx-icon-color": config.color } as CSSProperties)
     : undefined;

@@ -1,11 +1,10 @@
 /**
- * Wire-shaped pane state the mark accepts, payload included.
+ * Wire-shaped pane state the mascot accepts, payload included.
  *
  * `GisxIconState` is derived from this rather than written out again: a
  * string arm names itself, and an arm carrying data is named by its key. The
- * icon therefore cannot know a state this union does not have, and cannot
- * quietly miss one it does. `tests/pane-state.test.ts` in `web/` fails when
- * `gisx-icon.css` has no look for a state the Rust defines.
+ * mascot therefore cannot know a state this union does not have, and cannot
+ * quietly miss one it does.
  */
 export type GisxIconPaneState =
   | "Idle"
@@ -17,7 +16,7 @@ export type GisxIconPaneState =
 
 type NameOf<T> = T extends string ? T : keyof T & string;
 
-/** What the mark can look like: one appearance per protocol pane state. */
+/** What the mascot can look like: one appearance per protocol pane state. */
 export type GisxIconState = NameOf<GisxIconPaneState>;
 
 /**
@@ -34,7 +33,7 @@ export interface GazeIntent {
   hold: number;
 }
 
-/** Visual options that do not change the icon's state or motion. */
+/** Caller-chosen look that is not pane state and does not retune the physics. */
 export interface GisxIconConfig {
   /** Any valid CSS colour. Omit it to use the gisx neutral gray. */
   color?: string;

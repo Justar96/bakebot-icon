@@ -15,10 +15,10 @@ import type { GazeIntent } from "./types";
  * The four elements the simulation writes to.
  *
  * The hook creates them rather than accepting them, so the contract is one
- * way round: it owns every inline transform on the mark, and the component
+ * way round: it owns every inline transform on the mascot, and the component
  * only says where each part is. Nothing else may write these.
  */
-interface IdleMotionRefs {
+interface EyeMotionRefs {
   eye: RefObject<SVGGElement | null>;
   expression: RefObject<SVGGElement | null>;
   pupilMotion: RefObject<SVGGElement | null>;
@@ -69,17 +69,17 @@ interface EyePose {
 }
 
 /**
- * Owns the idle simulation and leaves the SVG component declarative.
+ * Owns the simulation and leaves the SVG component declarative.
  *
  * There is one clock and one loop. Blinks, glances and deformation are read
  * out of the same state every frame instead of being queued against each
  * other, which is what lets the eye blink mid-glance and flinch mid-blink.
  *
- * The places to look are also the switch: `null` is a mark with no life of its
- * own. One argument rather than a flag beside an array, because a flag and an
- * array can disagree about whether the eye is running.
+ * The places to look are also the switch: `null` is a mascot with no life of
+ * its own. One argument rather than a flag beside an array, because a flag
+ * and an array can disagree about whether the eye is running.
  */
-export function useIdleMotion(intents: readonly GazeIntent[] | null): IdleMotionRefs {
+export function useEyeMotion(intents: readonly GazeIntent[] | null): EyeMotionRefs {
   const eye = useRef<SVGGElement>(null);
   const expression = useRef<SVGGElement>(null);
   const pupilMotion = useRef<SVGGElement>(null);

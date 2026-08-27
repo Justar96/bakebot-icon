@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 
 /**
- * The properties the mark's idle behaviour must keep.
+ * The properties the mascot's motion must keep.
  *
  * One file for four modules, because what matters crosses them: containment is
  * the eye against the geometry, a corner splat is the geometry against the
@@ -70,7 +70,7 @@ function run(intent: { x: number; y: number }, seconds: number) {
   return { state, escaped };
 }
 
-describe("gisx icon motion", () => {
+describe("gisx mascot motion", () => {
   it("settles a glance through the default spring", () => {
     let value = { position: 0, velocity: 0 };
     for (let frame = 0; frame < 240; frame += 1) {
@@ -349,7 +349,7 @@ describe("gisx icon motion", () => {
   });
 });
 
-describe("the mark's life in each state", () => {
+describe("the mascot's life in each state", () => {
   it("holds the centre while attending, so the state's pose is what moves it", () => {
     // The CSS pose layer and the simulation write different elements, and they
     // would read as one confused mark if both moved the eye across the tile.

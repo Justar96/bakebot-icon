@@ -1,5 +1,5 @@
 /**
- * The one numerical integrator the mark uses.
+ * The one numerical integrator the mascot uses.
  *
  * Nothing here knows about eyes. Keeping it separate is what lets the eye
  * module read as a description of behaviour — a shell spring, a pupil spring

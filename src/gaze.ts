@@ -40,12 +40,12 @@ export const DEFAULT_GAZE_INTENTS: readonly GazeIntent[] = [
 ] as const;
 
 /**
- * The gaze of a mark that is attending to something rather than idling.
+ * The gaze of a mascot that is attending to something rather than wandering.
  *
  * Every place is inside the shell's deadzone, so the shell holds the centre
  * and each look is the pupil's alone. Drift, tremor and blinks continue, which
  * is what stops a state pose from reading as a frozen picture — the state says
- * what the mark is, and this says that it is still alive while it is that.
+ * what the mascot is, and this says that it is still alive while it is that.
  */
 export const ATTENTIVE_GAZE_INTENTS: readonly GazeIntent[] = [
   { x: 0, y: 0, hold: 1.4 },
@@ -93,7 +93,7 @@ export function normalizeGazeIntents(intents: readonly GazeIntent[]): readonly G
 }
 
 /**
- * Deterministic mulberry32. One stream drives the whole idle sequence — which
+ * Deterministic mulberry32. One stream drives the whole gaze sequence — which
  * place is looked at next, and when a blink falls — so a run is reproducible
  * from its seed alone.
  */
