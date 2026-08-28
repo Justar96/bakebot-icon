@@ -20,6 +20,7 @@
     "typecheck": "bun run --filter '*' typecheck",
     "build": "bun run --filter '@gisx-icon/core' build && bun run --filter 'gisx-icon' build",
     "play": "bun run --filter '@gisx-icon/playground' dev",
+    "play:build": "bun run --filter '@gisx-icon/playground' build",
     "verify:tarballs": "bun scripts/verify-tarballs.ts"
   },
   "devDependencies": {

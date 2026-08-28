@@ -1,186 +1,45 @@
-/* The playground's own chrome. The mascot brings its own stylesheet. */
+/* The only hand-written CSS: what StyleX cannot own. Everything else is
+ * compiled from `*.stylex.ts` tokens and `stylex.create` rules. */
 
-:root {
-  --bg: #0e0f12;
-  --panel: #16181d;
-  --line: #262a31;
-  --ink: #e8eaed;
-  --dim: #9aa1ac;
+@layer reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 
-  /* The two tokens the mascot's stylesheet reaches for. Defining them here is
-   * what a host application does; the package falls back if it does not. */
-  --text: #e8eaed;
-  --window-bg: #0e0f12;
+  body {
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
 
-  color-scheme: dark;
-}
+  html {
+    scroll-behavior: smooth;
+  }
 
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--ink);
-  font:
-    14px/1.5 ui-sans-serif,
-    system-ui,
-    sans-serif;
-}
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
 
-main {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 40px 24px 96px;
-}
-
-h1 {
-  margin: 0 0 4px;
-  font-size: 22px;
-  letter-spacing: -0.01em;
-}
-
-h2 {
-  margin: 0 0 12px;
-  font-size: 13px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--dim);
-}
-
-header p,
-.hint {
-  margin: 0;
-  max-width: 62ch;
-  color: var(--dim);
-}
-
-section {
-  margin-top: 40px;
-  padding-top: 24px;
-  border-top: 1px solid var(--line);
-}
-
-.row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-  align-items: flex-end;
-  margin-top: 16px;
-}
-
-figure {
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-figcaption {
-  font-size: 12px;
-  color: var(--dim);
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 16px;
-  margin-top: 16px;
-}
-
-fieldset {
-  margin: 0;
-  padding: 14px 16px 16px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--panel);
-}
-
-legend {
-  padding: 0 6px;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--dim);
-}
-
-.slider {
-  display: grid;
-  grid-template-columns: 1fr 110px 44px;
-  align-items: center;
-  gap: 10px;
-  padding: 4px 0;
-  font-size: 12px;
-}
-
-.slider__label {
-  color: var(--dim);
-}
-
-.slider input {
-  width: 100%;
-  accent-color: #5f8cff;
-}
-
-.slider output {
-  font-variant-numeric: tabular-nums;
-  text-align: right;
-  color: var(--ink);
-}
-
-.swatches {
-  display: flex;
-  gap: 8px;
-  padding: 8px 0;
-}
-
-.swatch {
-  width: 22px;
-  height: 22px;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.swatch--on {
-  outline: 2px solid #5f8cff;
-  outline-offset: 2px;
-}
-
-.reset {
-  margin-top: 8px;
-  padding: 6px 12px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #1d2027;
-  color: var(--ink);
-  font: inherit;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-details {
-  margin-top: 20px;
-  color: var(--dim);
-}
-
-summary {
-  cursor: pointer;
-  font-size: 12px;
-}
-
-pre {
-  overflow-x: auto;
-  padding: 14px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--panel);
-  color: var(--ink);
-  font-size: 12px;
-}
-
-code {
-  padding: 1px 5px;
-  border-radius: 4px;
-  background: var(--panel);
-  font-size: 12px;
+  button,
+  input,
+  output,
+  fieldset,
+  legend,
+  figure,
+  pre,
+  h1,
+  h2,
+  p {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font: inherit;
+    color: inherit;
+    background: none;
+    min-width: 0;
+  }
 }

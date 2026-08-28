@@ -6,8 +6,16 @@ import index from "../index.html";
  * Bun's fullstack server bundles the HTML's own `<script>` and `<link>` tags,
  * so there is no build tool and no dependency beyond what the packages already
  * need. React Fast Refresh needs no configuration — Bun applies the transform
- * and bundles the runtime itself.
+ * and bundles the runtime itself. StyleX is compiled by the plugin named in
+ * `bunfig.toml`, which writes its CSS to the dev stylesheet the HTML links.
  */
+
+// The plugin creates the stylesheet on the first bundle, but the HTML import
+// above resolves its `<link>` before that. Seed an empty one so a cold start
+// does not fail on a missing asset.
+const devCss = Bun.file(new URL("../dist/stylex.dev.css", import.meta.url));
+if (!(await devCss.exists())) await Bun.write(devCss, ":root { --stylex-injection: 0; }\n");
+
 const server = Bun.serve({
   port: Number(process.env.PORT ?? 3141),
   routes: { "/": index },
