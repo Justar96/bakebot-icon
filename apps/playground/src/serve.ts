@@ -25,4 +25,4 @@ const server = Bun.serve({
   development: { hmr: true, console: true },
 });
 
-console.log(`gisx mascot tuning → ${server.url}`);
+console.log(`bakebot mascot tuning → ${server.url}`);

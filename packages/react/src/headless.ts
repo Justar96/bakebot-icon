@@ -3,17 +3,17 @@
  *
  * This entry carries no stylesheet side effect, so it can be imported by a
  * Node process with no CSS loader. A browser caller still needs the mascot's
- * rules and imports `@bakebot/react/gisx-icon.css` itself.
+ * rules and imports `@bakebot/react/bakebot-icon.css` itself.
  */
 
 /* Import before exporting rather than using a named re-export. Bun currently
  * prunes the implementation of a named-re-export entry when this package's
  * manifest narrows side effects to CSS (oven-sh/bun#27709). The local binding
  * makes the implementation reachable without widening the consumer hint. */
-import { GisxIcon } from "./GisxIcon.js";
+import { BakebotIcon } from "./BakebotIcon.js";
 
-export { GisxIcon };
-export type { GisxIconProps } from "./GisxIcon.js";
+export { BakebotIcon };
+export type { BakebotIconProps } from "./BakebotIcon.js";
 export type { ReducedMotionBehaviour } from "./useEyeMotion.js";
 export {
   ATTENTIVE_GAZE_INTENTS,
@@ -39,4 +39,4 @@ export type {
   SpringTuning,
 } from "@bakebot/core";
 export type { MascotStatePose, TileSpec } from "@bakebot/core";
-export type { GazeIntent, GisxIconConfig, GisxIconPaneState, GisxIconState } from "./types.js";
+export type { GazeIntent, BakebotIconConfig, BakebotIconPaneState, BakebotIconState } from "./types.js";

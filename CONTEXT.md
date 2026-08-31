@@ -1,11 +1,11 @@
-# Gisx Icon
+# Bakebot Icon
 
-The gisx mascot: a tile of any shape and two living eyes. It exists so the icon is a character — programmatic motion, fluid physics, a one-line call, still customizable — not a drawing, clip, or sprite.
+The bakebot mascot: a tile of any shape and two living eyes. It exists so the icon is a character — programmatic motion, fluid physics, a one-line call, still customizable — not a drawing, clip, or sprite.
 
 ## Character
 
 **Mascot**:
-The gisx icon as a character. One tile, two eyes, either alive or shut.
+The bakebot icon as a character. One tile, two eyes, either alive or shut.
 _Avoid_: Logo, brand mark, sprite, avatar, widget, illustration
 
 **Tile**:

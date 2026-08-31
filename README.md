@@ -1,11 +1,11 @@
-# gisx-icon
+# bakebot-icon
 
-The gisx mascot. A tile and two eyes that move because they are a physical simulation, not because a clip is playing.
+The bakebot mascot. A tile and two eyes that move because they are a physical simulation, not because a clip is playing.
 
 ```ts
-import { GisxIcon } from "@bakebot/react";
+import { BakebotIcon } from "@bakebot/react";
 
-<GisxIcon state={entry.attention.state} size={32} />
+<BakebotIcon state={entry.attention.state} size={32} />
 ```
 
 Pass the pane state whole, payload included. The mascot names itself, ships its own styles, and stays alive in every state except Exited.
@@ -25,12 +25,12 @@ Idle wanders — some looks sit inside the tile, some sit past the border, so a 
 ## Customize
 
 ```ts
-import { ATTENTIVE_GAZE_INTENTS, GisxIcon } from "@bakebot/react";
+import { ATTENTIVE_GAZE_INTENTS, BakebotIcon } from "@bakebot/react";
 
-<GisxIcon
+<BakebotIcon
   state={entry.attention.state}
   size={32}
-  label="gisx is working"
+  label="bakebot is working"
   config={{ color: "#5f8cff" }}
   gazeIntents={ATTENTIVE_GAZE_INTENTS}
 />
@@ -41,22 +41,22 @@ import { ATTENTIVE_GAZE_INTENTS, GisxIcon } from "@bakebot/react";
 | `state` | Pane state, payload included. Default `Idle`. |
 | `size` | CSS pixels. Default `32`. |
 | `label` | Accessible name. Omit it and the mascot is decorative. |
-| `config.color` | Any CSS colour. Omit it for gisx gray. |
+| `config.color` | Any CSS colour. Omit it for bakebot gray. |
 | `gazeIntents` | Places to look while alive. A point past the tile is how the face turns all the way that way. Exited stays shut. |
 | `tuning` | Dials on the motion. Every dial is optional and clamped; see below. |
 | `seed` | Fixes this mascot's run. Omit it — each mascot already differs from its neighbours. |
 | `reducedMotion` | What `prefers-reduced-motion: reduce` does. `freeze` (default) or `settle`. |
 | `shape` | The tile to live in. A name from `MASCOT_SHAPES` or a `TileSpec` of your own. Default `circle`. |
 
-Two colours are worth knowing about. `config.color` is the tile. The eyes are filled from `--gisx-eye-color`, which chains to the host application's `--window-bg` if it defines one and otherwise falls back to a literal — so they read as two holes in the tile, and stay visible in an app that has never heard of that token.
+Two colours are worth knowing about. `config.color` is the tile. The eyes are filled from `--bakebot-eye-color`, which chains to the host application's `--window-bg` if it defines one and otherwise falls back to a literal — so they read as two holes in the tile, and stay visible in an app that has never heard of that token.
 
 ### Shape
 
 The tile is a rounded rectangle: two half extents and a corner radius. Six of them are named, and `shape` takes a name or a spec of your own.
 
 ```tsx
-<GisxIcon shape="squircle" />
-<GisxIcon shape={{ halfY: 24, radius: 12 }} />
+<BakebotIcon shape="squircle" />
+<BakebotIcon shape={{ halfY: 24, radius: 12 }} />
 ```
 
 | Name | The tile |
@@ -87,7 +87,7 @@ With no pupil to spend a short look on, the eyes do the glancing themselves. Tha
 ### Tuning
 
 ```ts
-<GisxIcon
+<BakebotIcon
   state={entry.attention.state}
   tuning={{ restlessness: 1.4, squish: 0.6, blinkInterval: 4 }}
 />
@@ -112,7 +112,7 @@ By default `prefers-reduced-motion: reduce` freezes the simulation: the eye ease
 It is not the only defensible reading. The preference is scoped to motion that triggers vestibular discomfort, and a wandering Idle mascot and an attending one are not the same amount of motion — measured on a 32px icon over a minute, Idle travels 11px and every other state stays around one. `settle` is the middle:
 
 ```ts
-<GisxIcon state={entry.attention.state} reducedMotion="settle" />
+<BakebotIcon state={entry.attention.state} reducedMotion="settle" />
 ```
 
 The eyes stay alive inside a widened deadzone. They still drift and the lids still blink, but nothing crosses the tile, turns the face, or deforms — 0.12px of travel. It is not a second physics: it is `ATTENTIVE_GAZE_INTENTS` with `SETTLED_TUNING`, both of which are exported, so a non-React binding settles the same way.

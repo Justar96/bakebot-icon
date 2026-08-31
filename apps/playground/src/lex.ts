@@ -4,7 +4,7 @@
  * Not Shiki, and not `@pierre/diffs` over it. Both were considered and both
  * are the wrong size for this page: they carry a TextMate grammar and a theme
  * resolver so that any language can be highlighted correctly, and this page
- * has four blocks in one language — a `GisxIcon` call, an import, and a dozen
+ * has four blocks in one language — a `BakebotIcon` call, an import, and a dozen
  * lines of a requestAnimationFrame loop. A grammar bundle is a hundred times
  * the weight of what it would be lexing here.
  *

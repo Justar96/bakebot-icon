@@ -23,7 +23,7 @@ import {
   SETTLED_TUNING,
   STATE_GAZE,
   STATE_POSE,
-  type GisxIconState,
+  type BakebotIconState,
   type MascotGeometry,
   type MascotShapeName,
   type MascotPose,
@@ -33,7 +33,7 @@ import {
 } from "@bakebot/core";
 
 export interface CanvasMascotOptions {
-  state?: GisxIconState;
+  state?: BakebotIconState;
   size?: number;
   /** Colours are the renderer's decision, not the character's. */
   colors?: { tile: string; eyes: string };

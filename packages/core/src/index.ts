@@ -30,4 +30,4 @@ export { facingEyes, mascotGeometry, MASCOT_GEOMETRY, MASCOT_SHAPES } from "./ge
 export type { FacingEye, MascotGeometry, MascotShapeName, TileSpec } from "./geometry.js";
 export { REST_POSE, STATE_GAZE, STATE_POSE } from "./states.js";
 export type { MascotStatePose } from "./states.js";
-export type { GazeIntent, GisxIconPaneState, GisxIconState } from "./protocol.js";
+export type { GazeIntent, BakebotIconPaneState, BakebotIconState } from "./protocol.js";

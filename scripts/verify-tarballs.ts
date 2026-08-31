@@ -28,7 +28,7 @@ const run = (cmd: string[], cwd: string) => {
   return result.stdout;
 };
 
-const scratch = mkdtempSync(join(tmpdir(), "gisx-consumer-"));
+const scratch = mkdtempSync(join(tmpdir(), "bakebot-consumer-"));
 const failures: string[] = [];
 const check = (ok: boolean, description: string) => {
   console.log(`${ok ? "✓" : "✗"} ${description}`);
@@ -86,8 +86,25 @@ for (const [name, dir] of [
   check(!declared.includes("workspace:"), `${name}: no workspace: protocol in the manifest`);
   check(!declared.includes("catalog:"), `${name}: no catalog: protocol in the manifest`);
   check(files.includes("package/README.md"), `${name}: the tarball carries its README`);
+  check(files.includes("package/CHANGELOG.md"), `${name}: the tarball carries its changelog`);
   check(files.includes("package/LICENSE"), `${name}: the tarball carries the MIT licence text`);
   check(!files.some((file) => file.endsWith(".map")), `${name}: the tarball carries no source maps`);
+
+  /* This is a hard rename, not a deprecation. Construct the retired spelling
+   * so the verifier itself does not preserve it in source, then scan both file
+   * names and every text file that can reach a consumer. */
+  const retiredName = ["gi", "sx"].join("");
+  const retired = new RegExp(retiredName, "i");
+  const retiredLocations = files.filter((file) => retired.test(file));
+  for (const file of files.filter((file) => /\.(?:js|d\.ts|css|json|md)$/.test(file))) {
+    const contents = run(["tar", "-xzOf", path, file], scratch);
+    if (retired.test(contents)) retiredLocations.push(file);
+  }
+  check(
+    retiredLocations.length === 0,
+    `${name}: the tarball contains no retired mascot names or paths`,
+  );
+  if (retiredLocations.length > 0) console.error([...new Set(retiredLocations)].join("\n"));
 
   for (const file of files.filter((file) => /\.(?:js|d\.ts)$/.test(file))) {
     const contents = run(["tar", "-xzOf", path, file], scratch);
@@ -106,7 +123,7 @@ for (const [name, dir] of [
       Array.isArray(manifest.sideEffects) &&
         manifest.sideEffects.length === 2 &&
         manifest.sideEffects[0] === "./dist/index.js" &&
-        manifest.sideEffects[1] === "./dist/gisx-icon.css",
+        manifest.sideEffects[1] === "./dist/bakebot-icon.css",
       "@bakebot/react marks only its CSS-bearing wrapper and stylesheet as effectful",
     );
   }
@@ -137,7 +154,7 @@ for (const [name, tarball] of Object.entries(tarballs)) {
     "bunx",
     /* `--exclude-entrypoints` takes a list, so it swallows the tarball path if
      * that comes after it. The file has to be first. */
-    ["attw", tarball, "--profile", "esm-only", "--exclude-entrypoints", "gisx-icon.css"],
+    ["attw", tarball, "--profile", "esm-only", "--exclude-entrypoints", "bakebot-icon.css"],
     { encoding: "utf8" },
   );
   check(
@@ -164,7 +181,7 @@ writeFileSync(
   join(scratch, "app/package.json"),
   JSON.stringify(
     {
-      name: "gisx-consumer",
+      name: "bakebot-consumer",
       private: true,
       type: "module",
       dependencies: {
@@ -221,13 +238,13 @@ writeFileSync(
 writeFileSync(
   join(scratch, "app/src/app.tsx"),
   `import { createRef } from "react";
-import { GisxIcon, createMascot, DEFAULT_TUNING } from "@bakebot/react";
+import { BakebotIcon, createMascot, DEFAULT_TUNING } from "@bakebot/react";
 import { facingEyes, MASCOT_SHAPES, mascotGeometry, SETTLED_TUNING } from "@bakebot/react";
-import type { FacingEye, GisxIconPaneState, MascotPose, MascotTuning, TileSpec } from "@bakebot/react";
+import type { FacingEye, BakebotIconPaneState, MascotPose, MascotTuning, TileSpec } from "@bakebot/react";
 import { createMascot as fromCore } from "@bakebot/core";
-import { GisxIcon as HeadlessGisxIcon, createMascot as fromHeadless } from "@bakebot/react/headless";
+import { BakebotIcon as HeadlessBakebotIcon, createMascot as fromHeadless } from "@bakebot/react/headless";
 
-const state: GisxIconPaneState = { Exited: { code: 0 } };
+const state: BakebotIconPaneState = { Exited: { code: 0 } };
 const tuning: MascotTuning = { ...DEFAULT_TUNING, restlessness: 1.5 };
 const mascot = createMascot({ intents: [{ x: 1, y: 1, hold: 1 }], seed: 1, tuning });
 mascot.advance(1 / 60);
@@ -237,8 +254,8 @@ const tile: TileSpec = { halfY: 24, radius: 12 };
 const root = createRef<SVGSVGElement>();
 export const App = () => (
   <>
-    <GisxIcon className="consumer-mark" ref={root} seed={2} shape="pill" size="0.78em" state={state} style={{ opacity: 0.75 }} tuning={tuning} />
-    <HeadlessGisxIcon shape={tile} />
+    <BakebotIcon className="consumer-mark" ref={root} seed={2} shape="pill" size="0.78em" state={state} style={{ opacity: 0.75 }} tuning={tuning} />
+    <HeadlessBakebotIcon shape={tile} />
   </>
 );
 const facing: readonly FacingEye[] = facingEyes(pose.yaw, pose.pitch);
@@ -250,12 +267,12 @@ run(["bun", "install"], join(scratch, "app"));
 check(true, "both tarballs install into a scratch project");
 
 /* A manifest can claim the CSS is effectful while marking the tiny wrapper
- * that imports it as safe to prune. A bundler then resolves `GisxIcon`
+ * that imports it as safe to prune. A bundler then resolves `BakebotIcon`
  * straight from headless.js and silently emits an unstyled mascot. Exercise
  * the packed package through a real production bundle and inspect its asset. */
 writeFileSync(
   join(scratch, "app/src/bundle.tsx"),
-  'import { GisxIcon } from "@bakebot/react"; console.log(GisxIcon);\n',
+  'import { BakebotIcon } from "@bakebot/react"; console.log(BakebotIcon);\n',
 );
 const bundledConsumer = spawnSync(
   "bun",
@@ -287,8 +304,8 @@ const wrapperIsEffectful =
 check(
   wrapperIsEffectful &&
     bundledConsumer.status === 0 &&
-    bundledCss.includes(".gisx-icon__disc") &&
-    bundledCss.includes(".gisx-icon__tile"),
+    bundledCss.includes(".bakebot-icon__disc") &&
+    bundledCss.includes(".bakebot-icon__tile"),
   `a consumer bundle keeps the mascot stylesheet through an effectful default entry${
     bundledConsumer.status === 0
       ? ""
@@ -301,7 +318,7 @@ const nodeImport = spawnSync(
   [
     "--input-type=module",
     "-e",
-    'const binding = await import("@bakebot/react/headless"); if (typeof binding.GisxIcon !== "function" || typeof binding.createMascot !== "function") process.exit(1);',
+    'const binding = await import("@bakebot/react/headless"); if (typeof binding.BakebotIcon !== "function" || typeof binding.createMascot !== "function") process.exit(1);',
   ],
   { cwd: join(scratch, "app"), encoding: "utf8" },
 );
@@ -321,14 +338,14 @@ const headlessBundle = readFileSync(
   "utf8",
 );
 const implementationFiles = [defaultBundle, headlessBundle].filter((bundle) =>
-  bundle.includes("gisx-icon__disc"),
+  bundle.includes("bakebot-icon__disc"),
 );
 check(
-  implementationFiles.length === 1 && headlessBundle.includes("gisx-icon__disc"),
+  implementationFiles.length === 1 && headlessBundle.includes("bakebot-icon__disc"),
   "the component implementation lives in the headless bundle exactly once",
 );
 check(
-  defaultBundle.includes('import "./gisx-icon.css"') &&
+  defaultBundle.includes('import "./bakebot-icon.css"') &&
     defaultBundle.includes('export * from "./headless.js"'),
   "the default entry adds CSS and re-exports the headless public surface",
 );
@@ -347,9 +364,9 @@ check(
 /* The bug that shipped in 0.2.0: the eyes' fill reached for the host
  * application's theme token with no fallback, so a consumer that did not
  * define it got an invalid `fill` — black on a dark tile, no visible eyes. */
-const css = readFileSync(join(scratch, "app/node_modules/@bakebot/react/dist/gisx-icon.css"), "utf8");
+const css = readFileSync(join(scratch, "app/node_modules/@bakebot/react/dist/bakebot-icon.css"), "utf8");
 check(
-  /--gisx-eye-color:\s*var\(--window-bg,\s*#[0-9a-f]{3,8}\)/i.test(css),
+  /--bakebot-eye-color:\s*var\(--window-bg,\s*#[0-9a-f]{3,8}\)/i.test(css),
   "the eye fill falls back to a literal for an off-brand consumer",
 );
 /* What a state *looks like* is `STATE_POSE` in the character package now, so
@@ -367,7 +384,7 @@ for (const state of ["NeedsAttention", "Notified"] as const) {
 /* Lose the discs' fill in bundling and both eyes take SVG's black default;
  * lose the class entirely and the DOM structure no longer matches the hook. */
 check(
-  /\.gisx-icon__disc[^{]*\{[^}]*fill:\s*var\(--gisx-eye-color/.test(css),
+  /\.bakebot-icon__disc[^{]*\{[^}]*fill:\s*var\(--bakebot-eye-color/.test(css),
   "the discs keep the eye colour after bundling",
 );
 
@@ -375,7 +392,7 @@ check(
  * and both happen about the middle of the icon instead, which slides the eyes
  * toward the nose rather than foreshortening them. */
 check(
-  /\.gisx-icon__disc[^{]*\{[^}]*transform-box:\s*fill-box/.test(css),
+  /\.bakebot-icon__disc[^{]*\{[^}]*transform-box:\s*fill-box/.test(css),
   "a turning disc keeps its own transform origin after bundling",
 );
 
@@ -422,11 +439,10 @@ const declarationSurface = (path: string, seen = new Set<string>()): Declaration
   return surface;
 };
 
-/* The baseline is whatever the registry serves as `latest`, never a pin.
- * A pinned baseline stops testing the release anyone is actually upgrading
- * from the moment it is superseded: held at 0.2.0, this said nothing about
- * whether 0.3.0's surface survived into 0.4.0, which is the only break a
- * consumer would feel.
+/* The baseline is whatever the registry serves as `latest`, never a pin, but
+ * compatibility belongs to a release line. Before 1.0 each minor starts a new
+ * line; after 1.0 each major does. That lets 0.4.0 make an intentional hard
+ * cut while 0.4.1 is still required to preserve everything 0.4.0 shipped.
  *
  * Looked up softly. `run` exits on a non-zero status, and a package with no
  * release yet is a first publish rather than a failure. */
@@ -436,8 +452,20 @@ const latest = spawnSync("npm", ["view", "@bakebot/react", "version"], {
 });
 const baseline = latest.status === 0 ? latest.stdout.trim() : "";
 
+const currentVersion = packedManifests["@bakebot/react"]!.version;
+const compatibilityLine = (version: string) => {
+  const [major = "0", minor = "0"] = version.split(".");
+  return major === "0" ? `${major}.${minor}` : major;
+};
+const sameCompatibilityLine = compatibilityLine(baseline) === compatibilityLine(currentVersion);
+
 if (!baseline) {
   console.log("• nothing published yet, so there is no surface to have broken");
+} else if (!sameCompatibilityLine) {
+  console.log(
+    `• ${currentVersion} starts compatibility line ${compatibilityLine(currentVersion)}; ` +
+      `${baseline} belongs to ${compatibilityLine(baseline)}`,
+  );
 } else {
   const publishedDirectory = join(scratch, `published-${baseline}`);
   mkdirSync(publishedDirectory);

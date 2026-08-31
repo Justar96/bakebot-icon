@@ -6,7 +6,7 @@ import {
   SETTLED_TUNING,
   STATE_GAZE,
   STATE_POSE,
-  type GisxIconState,
+  type BakebotIconState,
   type Mascot,
   type MascotGeometry,
   type MascotPose,
@@ -63,7 +63,7 @@ export interface Frame {
 
 /** The mascot a card is talking about, in the vocabulary the package uses. */
 export interface MascotSpec {
-  state: GisxIconState;
+  state: BakebotIconState;
   shape: MascotShapeName;
   color: string;
   tuning: MascotTuning;
@@ -102,7 +102,7 @@ export function LiveMascot({
   seed,
   children,
 }: {
-  state: GisxIconState;
+  state: BakebotIconState;
   shape: MascotShapeName;
   color: string;
   tuning: MascotTuning;

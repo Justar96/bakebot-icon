@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.0
+
+Hard-renames the component to `BakebotIcon` and its props to
+`BakebotIconProps`. CSS moves to `.bakebot-icon`, every custom property and
+animation uses the `--bakebot-*`/`bakebot-*` prefix, and the explicit stylesheet
+entry is now `@bakebot/react/bakebot-icon.css`.
+
+The old component, types, classes, variables and stylesheet path are removed;
+there are no compatibility aliases. This starts a new compatibility line.
+
 ## 0.3.2
 
 Fixes the types for anyone not using a bundler-style resolver.
@@ -9,7 +19,7 @@ runs. `dist/index.d.ts` re-exported `./headless` without a file extension, so
 `moduleResolution: node16` and `nodenext` could not resolve it and concluded
 the package exported nothing — reported as `error TS2305` on the consumer's own
 import, where `skipLibCheck` does not help. It also carried
-`import "./gisx-icon.css"`, which TypeScript cannot resolve as a type; that
+`import "./bakebot-icon.css"`, which TypeScript cannot resolve as a type; that
 made the browser entry unresolvable under *every* mode, bundler included. The
 stylesheet import stays in `dist/index.js`, where it does something.
 

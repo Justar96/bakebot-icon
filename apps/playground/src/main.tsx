@@ -4,10 +4,10 @@ import { createRoot } from "react-dom/client";
 
 import {
   DEFAULT_TUNING,
-  GisxIcon,
+  BakebotIcon,
   MASCOT_SHAPES,
-  type GisxIconPaneState,
-  type GisxIconState,
+  type BakebotIconPaneState,
+  type BakebotIconState,
   type MascotShapeName,
   type MascotTuning,
   type SpringTuning,
@@ -47,7 +47,7 @@ import { ScrollArea } from "./scroll-area";
 import { Button, styles as s } from "./ui";
 
 /**
- * The gisx mascot, with its documentation on one side and its dials on the other.
+ * The bakebot mascot, with its documentation on one side and its dials on the other.
  *
  * Three columns. The sidebar navigates and nothing else: where in the writing
  * to jump to. The middle is a document — the mascot at the top of it, then the
@@ -62,7 +62,7 @@ import { Button, styles as s } from "./ui";
  * you — it just no longer costs a full-height column to say so.
  */
 
-const STATES: readonly GisxIconPaneState[] = [
+const STATES: readonly BakebotIconPaneState[] = [
   "Idle",
   "Working",
   "NeedsAttention",
@@ -71,10 +71,10 @@ const STATES: readonly GisxIconPaneState[] = [
   { Exited: { code: 0 } },
 ];
 
-const stateName = (state: GisxIconPaneState) =>
+const stateName = (state: BakebotIconPaneState) =>
   typeof state === "string" ? state : `Exited(${state.Exited.code})`;
 
-const appearanceOf = (state: GisxIconPaneState): GisxIconState =>
+const appearanceOf = (state: BakebotIconPaneState): BakebotIconState =>
   typeof state === "string" ? state : "Exited";
 
 /* The stops on the scrubber, in the order the docs list them. `stateName` is
@@ -123,7 +123,7 @@ const SHAPES = Object.keys(MASCOT_SHAPES) as MascotShapeName[];
  * than a dump of the component's state.
  *
  * The component's own defaults are what "unchanged" is measured against:
- * `size = 32`, no shape is the circle, no colour is the gisx neutral.
+ * `size = 32`, no shape is the circle, no colour is the bakebot neutral.
  */
 const DEFAULT_SIZE = 32;
 const DEFAULT_SHAPE: MascotShapeName = "circle";
@@ -132,7 +132,7 @@ const DEFAULT_SHAPE: MascotShapeName = "circle";
  * per frame from the dials. The stylesheet is a side-effect import inside the
  * component, so there is never a second thing for a caller to remember. */
 const INSTALL_LINE = "bun add @bakebot/react";
-const IMPORT_LINE = 'import { GisxIcon } from "@bakebot/react";';
+const IMPORT_LINE = 'import { BakebotIcon } from "@bakebot/react";';
 
 const near = (value: number) => String(Math.round(value * 100) / 100);
 
@@ -149,12 +149,12 @@ const tuningProp = (tuning: MascotTuning) =>
 
 /* Written the way the docs write it, not the way `JSON.stringify` would: the
  * payload arm is an object literal a reader can type, with its keys unquoted. */
-const stateProp = (state: GisxIconPaneState) =>
+const stateProp = (state: BakebotIconPaneState) =>
   typeof state === "string" ? `"${state}"` : `{{ Exited: { code: ${state.Exited.code} } }}`;
 
 /** Every prop that departs from a default, one to a line. State always leads. */
 function propLines(
-  paneState: GisxIconPaneState,
+  paneState: BakebotIconPaneState,
   shape: MascotShapeName,
   size: number,
   color: string,
@@ -201,7 +201,7 @@ const PROPS: readonly {
 }[] = [
   {
     name: "state",
-    type: "GisxIconPaneState",
+    type: "BakebotIconPaneState",
     defaultValue: '"Idle"',
     description: "Pass pane state straight from your model, including the Exited payload.",
   },
@@ -396,9 +396,9 @@ const DOCS: readonly {
         </p>
         <Code>
           {[
-            'import { GisxIcon } from "@bakebot/react";',
+            'import { BakebotIcon } from "@bakebot/react";',
             "",
-            "<GisxIcon state={entry.attention.state} size={32} />",
+            "<BakebotIcon state={entry.attention.state} size={32} />",
           ].join("\n")}
         </Code>
         <p {...stylex.props(s.prose)}>
@@ -410,7 +410,7 @@ const DOCS: readonly {
 
         <h3 {...stylex.props(s.h3)}>The props</h3>
         <p {...stylex.props(s.prose)}>
-          Every prop on <code {...stylex.props(s.code)}>GisxIconProps</code> is
+          Every prop on <code {...stylex.props(s.code)}>BakebotIconProps</code> is
           optional. Start with <code {...stylex.props(s.code)}>state</code>, then
           add only the controls your product needs — a dash under Default means
           the component decides.
@@ -460,13 +460,13 @@ const DOCS: readonly {
           simulation on quieter dials inside a widened deadzone, which on a 32px
           icon is a fifth of a pixel of travel against Idle's eleven.
         </p>
-        <Code>{'<GisxIcon state="Working" reducedMotion="settle" />'}</Code>
+        <Code>{'<BakebotIcon state="Working" reducedMotion="settle" />'}</Code>
 
         <h3 {...stylex.props(s.h3)}>Two colours</h3>
         <p {...stylex.props(s.prose)}>
           <code {...stylex.props(s.code)}>config.color</code> is the tile. The
           eyes are filled from{" "}
-          <code {...stylex.props(s.code)}>--gisx-eye-color</code>, which chains
+          <code {...stylex.props(s.code)}>--bakebot-eye-color</code>, which chains
           to the host application's{" "}
           <code {...stylex.props(s.code)}>--window-bg</code> where one is
           defined and falls back to a literal where none is — so they read as
@@ -628,7 +628,7 @@ function App() {
   const [tuning, setTuning] = useState<MascotTuning>(DEFAULT_TUNING);
   const [size, setSize] = useState(96);
   const [shape, setShape] = useState<MascotShapeName>("circle");
-  const [paneState, setPaneState] = useState<GisxIconPaneState>("Idle");
+  const [paneState, setPaneState] = useState<BakebotIconPaneState>("Idle");
   const [mascotColor, setMascotColor] = useState(MASCOT_COLORS[0]!);
   const [surface, setSurface] = useState<Surface>(preferredSurface);
   // Bumping the key remounts the mascots: the way to watch a state's entrance
@@ -661,7 +661,7 @@ function App() {
   const common = { config: { color: mascotColor }, shape, size, tuning };
 
   const lines = propLines(paneState, shape, size, mascotColor, tuning);
-  const snippet = `<GisxIcon\n${lines.join("\n")}\n/>`;
+  const snippet = `<BakebotIcon\n${lines.join("\n")}\n/>`;
   /* The row shows the same props on one line, with the tuning block standing in
    * as a single token: the cell ellipsizes, and a wall of numbers would push
    * everything a reader can actually read off the end of it. */
@@ -694,7 +694,7 @@ function App() {
               its toggle went where the rest of the customizing is. */}
           <div {...stylex.props(s.railHead)}>
             <div {...stylex.props(s.brand)}>
-              gisx <span {...stylex.props(s.brandSub)}>/ playground</span>
+              bakebot <span {...stylex.props(s.brandSub)}>/ playground</span>
             </div>
           </div>
 
@@ -870,7 +870,7 @@ function App() {
             </div>
             <div {...stylex.props(s.stageFrame)}>
               <div {...stylex.props(s.stageStand)}>
-                <GisxIcon
+                <BakebotIcon
                   key={`stage-${replay}`}
                   {...common}
                   label={stateName(paneState)}
@@ -976,7 +976,7 @@ function App() {
                   <ClipboardField
                     copiedLabel="Copied"
                     copyLabel="Copy this call"
-                    label={`<GisxIcon ${summary} />`}
+                    label={`<BakebotIcon ${summary} />`}
                     prompt="›"
                     value={snippet}
                   />
@@ -1011,12 +1011,12 @@ function App() {
           <footer id={COLOPHON} {...stylex.props(s.colophon)}>
             <div {...stylex.props(s.colophonSlab)}>
               <span {...stylex.props(s.colophonBrand)}>
-                <span {...stylex.props(s.colophonName)}>gisx-icon</span>
+                <span {...stylex.props(s.colophonName)}>bakebot-icon</span>
                 <span>0.2.0 · MIT</span>
               </span>
               <nav {...stylex.props(s.colophonLinks)}>
                 <a
-                  href="https://github.com/Justar96/gisx-icon"
+                  href="https://github.com/Justar96/bakebot-icon"
                   rel="noreferrer"
                   target="_blank"
                   {...stylex.props(s.colophonLink)}
@@ -1024,7 +1024,7 @@ function App() {
                   Source
                 </a>
                 <a
-                  href="https://github.com/Justar96/gisx-icon/issues"
+                  href="https://github.com/Justar96/bakebot-icon/issues"
                   rel="noreferrer"
                   target="_blank"
                   {...stylex.props(s.colophonLink)}

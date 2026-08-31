@@ -53,13 +53,13 @@ if (bundle.status !== 0) process.exit(bundle.status ?? 1);
  * is wanted for a hand-written stylesheet, so the source is copied byte for
  * byte. */
 if (existsSync("dist/headless.css")) unlinkSync("dist/headless.css");
-writeFileSync("dist/gisx-icon.css", readFileSync("src/gisx-icon.css"));
+writeFileSync("dist/bakebot-icon.css", readFileSync("src/bakebot-icon.css"));
 
 /* The browser entry owns the one automatic stylesheet import. Keeping it as a
  * wrapper around headless makes the two package specifiers one module graph,
  * rather than two bundled copies that happen to export the same names. */
 const defaultJs =
-  '"use client";\nimport "./gisx-icon.css";\nexport * from "./headless.js";\n';
+  '"use client";\nimport "./bakebot-icon.css";\nexport * from "./headless.js";\n';
 writeFileSync("dist/index.js", defaultJs);
 
 /* Bun labels each bundled module with its source path. The throwaway directory
@@ -80,7 +80,7 @@ if (/\.css["']/.test(headlessJs)) {
   console.error("headless bundle imports CSS instead of leaving it to the caller");
   process.exit(1);
 }
-if (defaultJs.includes("gisx-icon__tile")) {
+if (defaultJs.includes("bakebot-icon__tile")) {
   console.error("default entry contains the component instead of re-exporting headless");
   process.exit(1);
 }
@@ -91,7 +91,7 @@ if (!defaultJs.includes('export * from "./headless.js"')) {
 
 /* Same pruning guard as core's build: the bundle must contain the component,
  * not merely name it in an export list. */
-if (!headlessJs.includes("gisx-icon__tile")) {
+if (!headlessJs.includes("bakebot-icon__tile")) {
   console.error("headless react bundle is missing the component: the module graph was pruned away");
   process.exit(1);
 }
@@ -141,7 +141,7 @@ for (const declaration of ["dist/index.d.ts", "dist/headless.d.ts"]) {
  * `are-the-types-wrong` under every mode including bundler, and errored any
  * consumer building without `skipLibCheck`. */
 const indexDts = readFileSync("dist/index.d.ts", "utf8").replace(
-  /^import\s+["']\.\/gisx-icon\.css["'];?\r?\n/m,
+  /^import\s+["']\.\/bakebot-icon\.css["'];?\r?\n/m,
   "",
 );
 writeFileSync("dist/index.d.ts", indexDts);

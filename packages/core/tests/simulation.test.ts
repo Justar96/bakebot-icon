@@ -90,7 +90,7 @@ function run(
   return { state, escaped };
 }
 
-describe("gisx mascot motion", () => {
+describe("bakebot mascot motion", () => {
   it("settles a glance through the default spring", () => {
     let value = { position: 0, velocity: 0 };
     for (let frame = 0; frame < 240; frame += 1) {

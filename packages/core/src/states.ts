@@ -1,5 +1,5 @@
 import { ATTENTIVE_GAZE_INTENTS, DEFAULT_GAZE_INTENTS } from "./gaze.js";
-import type { GazeIntent, GisxIconState } from "./protocol.js";
+import type { GazeIntent, BakebotIconState } from "./protocol.js";
 
 /**
  * What each state means to the mascot: what it looks at, and what shape it holds
@@ -7,7 +7,7 @@ import type { GazeIntent, GisxIconState } from "./protocol.js";
  *
  * Both records are exhaustive by type. A state added to the wire fails to
  * compile here until someone has decided how the mascot behaves in it — that is
- * the point of `GisxIconState` being the protocol's own vocabulary rather than a
+ * the point of `BakebotIconState` being the protocol's own vocabulary rather than a
  * list beside it.
  */
 
@@ -17,7 +17,7 @@ import type { GazeIntent, GisxIconState } from "./protocol.js";
  * `null` stops their own motion, which suits only a state whose pose has
  * already shut them.
  */
-export const STATE_GAZE: Record<GisxIconState, readonly GazeIntent[] | null> = {
+export const STATE_GAZE: Record<BakebotIconState, readonly GazeIntent[] | null> = {
   // Nothing to attend to, so the eyes are free to wander the whole tile and to
   // turn the face all the way to its border.
   Idle: DEFAULT_GAZE_INTENTS,
@@ -76,7 +76,7 @@ const from = (departure: Partial<MascotStatePose> = {}): MascotStatePose => ({
   ...departure,
 });
 
-export const STATE_POSE: Record<GisxIconState, MascotStatePose> = {
+export const STATE_POSE: Record<BakebotIconState, MascotStatePose> = {
   // Wandering is the whole tile; the pose stays out of the way of it.
   Idle: from(),
   // Leaning in and slightly narrowed, the way a face does at close work.

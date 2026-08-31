@@ -1,6 +1,6 @@
 # @bakebot/react
 
-The React binding for the gisx mascot. It draws the paired-eye SVG, runs the
+The React binding for the bakebot mascot. It draws the paired-eye SVG, runs the
 `@bakebot/core` simulation, and loads the stylesheet for you.
 
 ## Install
@@ -14,21 +14,21 @@ React 19 is a peer dependency. `@bakebot/core` comes with the binding.
 ## Smallest component
 
 ```tsx
-import { GisxIcon } from "@bakebot/react";
+import { BakebotIcon } from "@bakebot/react";
 
 export function StatusMark() {
-  return <GisxIcon state="Working" size={32} label="gisx is working" />;
+  return <BakebotIcon state="Working" size={32} label="bakebot is working" />;
 }
 ```
 
 ## What it exports
 
-- `GisxIcon` and `GisxIconProps`
+- `BakebotIcon` and `BakebotIconProps`
 - the state, gaze, tuning, geometry and reduced-motion types
 - the public `@bakebot/core` helpers, among them `createMascot`, `facingEyes`
   and `mascotGeometry`
 
-`GisxIcon` takes a pane `state`, a `size` in pixels or any CSS length, an
+`BakebotIcon` takes a pane `state`, a `size` in pixels or any CSS length, an
 accessible `label`, `config.color`, `gazeIntents`, `tuning`, `shape`, `seed`
 and `reducedMotion`. `className`, `style` and `ref` reach the root `<svg>`.
 `className` merges with the mascot's own class rather than replacing it, and
@@ -46,14 +46,14 @@ That is any test runner without a CSS transform. Import the headless entry
 there instead:
 
 ```tsx
-import { GisxIcon } from "@bakebot/react/headless";
+import { BakebotIcon } from "@bakebot/react/headless";
 ```
 
 It carries no stylesheet side effect, so a browser build using it loads the
 CSS itself:
 
 ```ts
-import "@bakebot/react/gisx-icon.css";
+import "@bakebot/react/bakebot-icon.css";
 ```
 
 Both entries are the same implementation, so importing each of them in one
@@ -62,4 +62,4 @@ application, unless the build owns CSS loading.
 
 ## Repository
 
-[github.com/Justar96/gisx-icon](https://github.com/Justar96/gisx-icon/tree/main/packages/react)
+[github.com/Justar96/bakebot-icon](https://github.com/Justar96/bakebot-icon/tree/main/packages/react)

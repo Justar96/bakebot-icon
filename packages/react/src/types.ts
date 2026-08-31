@@ -7,10 +7,10 @@
  * has to know that the character and its renderer are two packages.
  */
 
-export type { GazeIntent, GisxIconPaneState, GisxIconState } from "@bakebot/core";
+export type { GazeIntent, BakebotIconPaneState, BakebotIconState } from "@bakebot/core";
 
 /** Caller-chosen look that is not pane state and does not retune the physics. */
-export interface GisxIconConfig {
-  /** Any valid CSS colour. Omit it to use the gisx neutral gray. */
+export interface BakebotIconConfig {
+  /** Any valid CSS colour. Omit it to use the bakebot neutral gray. */
   color?: string;
 }

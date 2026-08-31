@@ -1,12 +1,12 @@
 /**
  * Wire-shaped pane state the mascot accepts, payload included.
  *
- * `GisxIconState` is derived from this rather than written out again: a
+ * `BakebotIconState` is derived from this rather than written out again: a
  * string arm names itself, and an arm carrying data is named by its key. The
  * mascot therefore cannot know a state this union does not have, and cannot
  * quietly miss one it does.
  */
-export type GisxIconPaneState =
+export type BakebotIconPaneState =
   | "Idle"
   | "Working"
   | "NeedsAttention"
@@ -17,7 +17,7 @@ export type GisxIconPaneState =
 type NameOf<T> = T extends string ? T : keyof T & string;
 
 /** What the mascot can look like: one appearance per protocol pane state. */
-export type GisxIconState = NameOf<GisxIconPaneState>;
+export type BakebotIconState = NameOf<BakebotIconPaneState>;
 
 /**
  * A place the eye wants to look, in viewBox units from the icon centre.
@@ -34,7 +34,7 @@ export interface GazeIntent {
 }
 
 /** Caller-chosen look that is not pane state and does not retune the physics. */
-export interface GisxIconConfig {
-  /** Any valid CSS colour. Omit it to use the gisx neutral gray. */
+export interface BakebotIconConfig {
+  /** Any valid CSS colour. Omit it to use the bakebot neutral gray. */
   color?: string;
 }

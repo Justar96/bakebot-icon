@@ -6,6 +6,6 @@
  * Node test importing different entry points do not receive two mascots.
  */
 
-import "./gisx-icon.css";
+import "./bakebot-icon.css";
 
 export * from "./headless.js";

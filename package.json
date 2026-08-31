@@ -1,9 +1,9 @@
 {
-  "name": "gisx-icon-monorepo",
+  "name": "bakebot-icon-monorepo",
   "private": true,
   "type": "module",
   "license": "MIT",
-  "description": "The gisx mascot: a headless character package and its React binding.",
+  "description": "The bakebot mascot: a headless character package and its React binding.",
   "workspaces": {
     "packages": ["packages/*", "apps/*"],
     "catalog": {

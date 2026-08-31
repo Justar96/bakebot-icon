@@ -13,7 +13,7 @@ import {
   type MascotTuning,
   type TileSpec,
 } from "@bakebot/core";
-import type { GazeIntent, GisxIconConfig, GisxIconPaneState, GisxIconState } from "./types.js";
+import type { GazeIntent, BakebotIconConfig, BakebotIconPaneState, BakebotIconState } from "./types.js";
 import { useEyeMotion, type ReducedMotionBehaviour } from "./useEyeMotion.js";
 
 /* Where the two eyes sit face-on. Given no geometry because the pair is
@@ -21,13 +21,13 @@ import { useEyeMotion, type ReducedMotionBehaviour } from "./useEyeMotion.js";
  * every shape — see `mascotGeometry`. */
 const REST_EYES = facingEyes(0, 0);
 
-export interface GisxIconProps {
+export interface BakebotIconProps {
   /**
    * A pane state straight off the model, payload included. The mascot does its
-   * own normalising, so a caller never converts one first — `<GisxIcon
+   * own normalising, so a caller never converts one first — `<BakebotIcon
    * state={entry.attention.state} />` is the whole wiring.
    */
-  state?: GisxIconPaneState;
+  state?: BakebotIconPaneState;
   /** A number of CSS pixels, or any CSS length accepted by SVG. */
   size?: number | string;
   label?: string;
@@ -38,7 +38,7 @@ export interface GisxIconProps {
   /** The root SVG element. */
   ref?: Ref<SVGSVGElement>;
   /** Look that is not pane state. Omit this to use the neutral gray. */
-  config?: GisxIconConfig;
+  config?: BakebotIconConfig;
   /**
    * Places to look, overriding what the state would choose. A state whose pose
    * has shut the eye stays shut: `STATE_GAZE` decides whether the mascot is
@@ -80,7 +80,7 @@ export interface GisxIconProps {
   reducedMotion?: ReducedMotionBehaviour;
 }
 
-function paneStateName(state: GisxIconPaneState): GisxIconState {
+function paneStateName(state: BakebotIconPaneState): BakebotIconState {
   return typeof state === "string" ? state : "Exited";
 }
 
@@ -91,13 +91,13 @@ function paneStateName(state: GisxIconPaneState): GisxIconState {
  * `STATE_POSE` rather than from a rule per state — so what a state looks like
  * has one definition, and a canvas binding reads the same one. */
 const POSE_PROPERTY = {
-  eyeX: "--gisx-eye-x",
-  eyeY: "--gisx-eye-y",
-  eyeScaleX: "--gisx-eye-scale-x",
-  eyeScaleY: "--gisx-eye-scale-y",
-  pairY: "--gisx-pair-y",
-  pairScaleX: "--gisx-pair-scale-x",
-  pairScaleY: "--gisx-pair-scale-y",
+  eyeX: "--bakebot-eye-x",
+  eyeY: "--bakebot-eye-y",
+  eyeScaleX: "--bakebot-eye-scale-x",
+  eyeScaleY: "--bakebot-eye-scale-y",
+  pairY: "--bakebot-pair-y",
+  pairScaleX: "--bakebot-pair-scale-x",
+  pairScaleY: "--bakebot-pair-scale-y",
 } as const satisfies Record<keyof MascotStatePose, string>;
 
 const POSE_FIELDS = Object.keys(POSE_PROPERTY) as (keyof MascotStatePose)[];
@@ -110,7 +110,7 @@ const POSE_FIELDS = Object.keys(POSE_PROPERTY) as (keyof MascotStatePose)[];
  * free of inline style entirely and a list of mascots free of ten redundant
  * properties each.
  */
-function statePoseStyle(appearance: GisxIconState): Record<string, string> | undefined {
+function statePoseStyle(appearance: BakebotIconState): Record<string, string> | undefined {
   // An unknown runtime state has no pose, the same way it has no gaze.
   const pose = STATE_POSE[appearance] as MascotStatePose | undefined;
   if (!pose) return undefined;
@@ -128,7 +128,7 @@ function statePoseStyle(appearance: GisxIconState): Record<string, string> | und
 }
 
 /**
- * The gisx mascot: one stable tile and a pair of eyes in it.
+ * The bakebot mascot: one stable tile and a pair of eyes in it.
  *
  * Behaviour is a continuous simulation rather than a queue of clips. The eyes
  * are one mass on a stiff spring confined to the tile, and everything
@@ -138,11 +138,11 @@ function statePoseStyle(appearance: GisxIconState): Record<string, string> | und
  * there is only one clock.
  *
  * The state is painted in two layers that never write the same element. Colour
- * and pose are CSS, in `gisx-icon.css`, keyed on `data-state`; the life
+ * and pose are CSS, in `bakebot-icon.css`, keyed on `data-state`; the life
  * underneath comes from `STATE_GAZE`. The nesting below is that division —
  * each `__state-*` group holds a `__*-motion` group.
  */
-export function GisxIcon({
+export function BakebotIcon({
   state = "Idle",
   size = 32,
   label,
@@ -155,7 +155,7 @@ export function GisxIcon({
   seed,
   reducedMotion,
   shape,
-}: GisxIconProps) {
+}: BakebotIconProps) {
   const appearance = paneStateName(state);
   // A degenerate size from a plain-JS caller (NaN, 0, negative) must not reach
   // the DOM as an invalid width/height attribute.
@@ -180,13 +180,13 @@ export function GisxIcon({
    * has to be the tile itself — the same rect, from the same numbers. React's
    * id is stable across server and client but not a valid bare identifier, so
    * it is sanitised rather than used raw in a fragment reference. */
-  const clip = `gisx-tile-${useId().replace(/[^A-Za-z0-9_-]/g, "")}`;
+  const clip = `bakebot-tile-${useId().replace(/[^A-Za-z0-9_-]/g, "")}`;
   const posed = statePoseStyle(appearance);
   const style =
     posed || config?.color || callerStyle
       ? ({
           ...posed,
-          ...(config?.color && { "--gisx-icon-color": config.color }),
+          ...(config?.color && { "--bakebot-icon-color": config.color }),
           ...callerStyle,
         } as CSSProperties)
       : undefined;
@@ -195,7 +195,7 @@ export function GisxIcon({
     <svg
       aria-hidden={label ? undefined : true}
       aria-label={label}
-      className={className ? `gisx-icon ${className}` : "gisx-icon"}
+      className={className ? `bakebot-icon ${className}` : "bakebot-icon"}
       data-state={appearance}
       // The simulation writes the motion layers every frame, so their state
       // transition must be off while it runs and on for the hand-off out. The
@@ -224,7 +224,7 @@ export function GisxIcon({
         </clipPath>
       </defs>
       <rect
-        className="gisx-icon__tile"
+        className="bakebot-icon__tile"
         height={geometry.tile.height}
         rx={geometry.tile.radius}
         ry={geometry.tile.radius}
@@ -236,32 +236,32 @@ export function GisxIcon({
           `clip-path` is resolved in the user space of the element carrying it,
           so putting it on a layer that moves would carry the tile's own
           outline along with the eyes. */}
-      <g className="gisx-icon__frame" clipPath={`url(#${clip})`}>
-        <g className="gisx-icon__state-pose">
-          <g className="gisx-icon__eye-motion" ref={motion.eye}>
-            <g className="gisx-icon__expression-motion" ref={motion.expression}>
+      <g className="bakebot-icon__frame" clipPath={`url(#${clip})`}>
+        <g className="bakebot-icon__state-pose">
+          <g className="bakebot-icon__eye-motion" ref={motion.eye}>
+            <g className="bakebot-icon__expression-motion" ref={motion.expression}>
               {/* The entrance is a layer of its own because it animates a
                   transform, and the group below already holds one. */}
-              <g className="gisx-icon__entrance">
+              <g className="bakebot-icon__entrance">
                 {/* One group, because the pair's own state pose belongs to
                     the eyes together — a state squints both or neither.
                     Drawn facing straight ahead, which is what a mascot that
                     is frozen or has not had a frame yet stays as; the hook
                     writes the turn as a difference from here. */}
-                <g className="gisx-icon__eyes">
+                <g className="bakebot-icon__eyes">
                   {/* The Notified blink sits inside the pair pose. Scaling an
                       outer layer also scales `pairY`, which makes the eyes jump
                       upward as they close instead of blinking in place. */}
-                  <g className="gisx-icon__notified-blink">
+                  <g className="bakebot-icon__notified-blink">
                     <circle
-                      className="gisx-icon__disc"
+                      className="bakebot-icon__disc"
                       cx={geometry.centre + REST_EYES[0].x}
                       cy={geometry.centre}
                       r={geometry.eyes.radius}
                       ref={motion.left}
                     />
                     <circle
-                      className="gisx-icon__disc"
+                      className="bakebot-icon__disc"
                       cx={geometry.centre + REST_EYES[1].x}
                       cy={geometry.centre}
                       r={geometry.eyes.radius}

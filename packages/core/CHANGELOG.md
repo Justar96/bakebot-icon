@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.0
+
+Hard-renames the mascot vocabulary to Bakebot. The protocol now exports
+`BakebotIconState`, `BakebotIconPaneState` and `BakebotIconConfig`; the retired
+names are removed rather than kept as aliases.
+
+This starts a new compatibility line. Patch releases in the 0.4 line remain
+checked against the latest published 0.4 surface.
+
 ## 0.3.2
 
 The declarations now spell their relative imports with the `.js` extension the

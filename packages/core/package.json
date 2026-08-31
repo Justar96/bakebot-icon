@@ -1,14 +1,14 @@
 {
   "name": "@bakebot/core",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "license": "MIT",
   "engines": {
     "node": ">=20"
   },
   "type": "module",
-  "description": "The gisx mascot's character: a headless spring simulation with no renderer.",
+  "description": "The bakebot mascot's character: a headless spring simulation with no renderer.",
   "keywords": [
-    "gisx",
+    "bakebot",
     "mascot",
     "spring",
     "physics",
@@ -17,12 +17,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Justar96/gisx-icon.git",
+    "url": "git+https://github.com/Justar96/bakebot-icon.git",
     "directory": "packages/core"
   },
-  "homepage": "https://github.com/Justar96/gisx-icon",
+  "homepage": "https://github.com/Justar96/bakebot-icon",
   "bugs": {
-    "url": "https://github.com/Justar96/gisx-icon/issues"
+    "url": "https://github.com/Justar96/bakebot-icon/issues"
   },
   "publishConfig": {
     "access": "public"

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Live tuning surface for the gisx mascot. Not published.",
+  "description": "Live tuning surface for the bakebot mascot. Not published.",
   "scripts": {
     "dev": "bun run src/serve.ts",
     "build": "bun run src/build.ts",

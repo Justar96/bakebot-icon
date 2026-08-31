@@ -29,7 +29,7 @@ describe("lex", () => {
     for (const source of [
       "",
       "  ",
-      "<GisxIcon />",
+      "<BakebotIcon />",
       'const a = "x"; // done',
       "/* unterminated",
       'a === b ? "y" : "n"',
@@ -41,8 +41,8 @@ describe("lex", () => {
   });
 
   test("colours the call the composer writes", () => {
-    expect(kinds('<GisxIcon state="Working" size={32} />')).toEqual([
-      "tag:GisxIcon",
+    expect(kinds('<BakebotIcon state="Working" size={32} />')).toEqual([
+      "tag:BakebotIcon",
       "attr:state",
       'string:"Working"',
       "attr:size",

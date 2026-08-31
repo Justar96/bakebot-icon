@@ -1,6 +1,6 @@
 # @bakebot/core
 
-The gisx mascot with no renderer attached: a deterministic spring simulation,
+The bakebot mascot with no renderer attached: a deterministic spring simulation,
 a gaze model, the tuning surface, the state poses, and the geometry needed to
 draw any of it. No runtime dependencies, and it knows nothing about React or
 the DOM.
@@ -44,4 +44,4 @@ simulation can be retuned without breaking a renderer.
 
 ## Repository
 
-[github.com/Justar96/gisx-icon](https://github.com/Justar96/gisx-icon/tree/main/packages/core)
+[github.com/Justar96/bakebot-icon](https://github.com/Justar96/bakebot-icon/tree/main/packages/core)

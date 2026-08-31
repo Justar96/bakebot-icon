@@ -33,7 +33,7 @@ import { bind, play, setEnabled, setVolume, type SoundName } from "cuelume";
  * fires is a no-op inside the engine. Nothing needs re-binding after a render.
  */
 
-const KEY = "gisx-playground-sound";
+const KEY = "bakebot-playground-sound";
 
 /* Interface sound sits under the content, not over it. cuelume's cues are
  * synthesised with soft envelopes rather than transients, so this is quieter

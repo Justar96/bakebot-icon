@@ -1,12 +1,12 @@
 {
   "name": "@bakebot/react",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "license": "MIT",
   "engines": {
     "node": ">=20"
   },
   "type": "module",
-  "description": "Living gisx mascot: programmatic motion, fluid physics, one-line wiring.",
+  "description": "Living bakebot mascot: programmatic motion, fluid physics, one-line wiring.",
   "keywords": [
     "react",
     "component",
@@ -16,19 +16,19 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Justar96/gisx-icon.git",
+    "url": "git+https://github.com/Justar96/bakebot-icon.git",
     "directory": "packages/react"
   },
-  "homepage": "https://github.com/Justar96/gisx-icon",
+  "homepage": "https://github.com/Justar96/bakebot-icon",
   "bugs": {
-    "url": "https://github.com/Justar96/gisx-icon/issues"
+    "url": "https://github.com/Justar96/bakebot-icon/issues"
   },
   "publishConfig": {
     "access": "public"
   },
   "sideEffects": [
     "./dist/index.js",
-    "./dist/gisx-icon.css"
+    "./dist/bakebot-icon.css"
   ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -41,7 +41,7 @@
       "types": "./dist/headless.d.ts",
       "import": "./dist/headless.js"
     },
-    "./gisx-icon.css": "./dist/gisx-icon.css",
+    "./bakebot-icon.css": "./dist/bakebot-icon.css",
     "./package.json": "./package.json"
   },
   "files": [

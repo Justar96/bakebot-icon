@@ -271,6 +271,6 @@ function stableKey(value: unknown): string {
   try {
     return JSON.stringify(value) ?? "null";
   } catch {
-    return "gisx-unserializable";
+    return "bakebot-unserializable";
   }
 }

@@ -1,7 +1,7 @@
 import * as stylex from "@stylexjs/stylex";
 import {
   facingEyes,
-  type GisxIconState,
+  type BakebotIconState,
   type MascotShapeName,
   type MascotTuning,
   type SpringTuning,
@@ -674,7 +674,7 @@ function CanvasFrame({ size }: { size: number }) {
 
   /* The eyes read as two holes in the tile, so they take the colour of the
    * window behind it — `--window-bg`, the same custom property the stylesheet
-   * resolves `--gisx-eye-color` from. CSS hands the SVG binding that for free;
+   * resolves `--bakebot-eye-color` from. CSS hands the SVG binding that for free;
    * a canvas has to ask. Read after every render so a theme change lands. */
   useEffect(() => {
     const element = canvas.current;
@@ -743,7 +743,7 @@ export function RendererCard(props: SpecInput) {
 /* ---- what a card is handed --------------------------------------------- */
 
 export interface SpecInput {
-  state: GisxIconState;
+  state: BakebotIconState;
   shape: MascotShapeName;
   color: string;
   tuning: MascotTuning;
