@@ -10,11 +10,11 @@
  * prunes the implementation of a named-re-export entry when this package's
  * manifest narrows side effects to CSS (oven-sh/bun#27709). The local binding
  * makes the implementation reachable without widening the consumer hint. */
-import { GisxIcon } from "./GisxIcon";
+import { GisxIcon } from "./GisxIcon.js";
 
 export { GisxIcon };
-export type { GisxIconProps } from "./GisxIcon";
-export type { ReducedMotionBehaviour } from "./useEyeMotion";
+export type { GisxIconProps } from "./GisxIcon.js";
+export type { ReducedMotionBehaviour } from "./useEyeMotion.js";
 export {
   ATTENTIVE_GAZE_INTENTS,
   createMascot,
@@ -39,4 +39,4 @@ export type {
   SpringTuning,
 } from "@bakebot/core";
 export type { MascotStatePose, TileSpec } from "@bakebot/core";
-export type { GazeIntent, GisxIconConfig, GisxIconPaneState, GisxIconState } from "./types";
+export type { GazeIntent, GisxIconConfig, GisxIconPaneState, GisxIconState } from "./types.js";

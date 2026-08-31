@@ -1,6 +1,7 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { rm } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
+import { join } from "node:path";
 
 /**
  * Build the character package.
@@ -55,3 +56,26 @@ if (bareImport) {
 
 const tsc = spawnSync("bunx", ["tsc", "-p", "tsconfig.build.json"], { stdio: "inherit" });
 if (tsc.status !== 0) process.exit(tsc.status ?? 1);
+
+/* TypeScript writes relative specifiers into declarations exactly as the
+ * source wrote them, so an extensionless `./mascot` ships as-is. Under
+ * `moduleResolution: node16` or `nodenext` that is not resolvable, and a
+ * consumer sees the failure reported against their own import rather than
+ * against us — `skipLibCheck` does not suppress it. Shipped 0.3.1 before this
+ * guard existed; `are-the-types-wrong` called it an internal resolution
+ * error. The runtime bundle was always fine, which is exactly why nothing
+ * else noticed. */
+for (const declaration of readdirSync("dist").filter((f) => f.endsWith(".d.ts"))) {
+  const dts = readFileSync(join("dist", declaration), "utf8");
+  const bad = /from\s*["'](\.\.?\/[^"']*)["']/g;
+  for (const [, specifier] of dts.matchAll(bad)) {
+    if (!specifier) continue;
+    if (!/\.(js|css|json)$/.test(specifier)) {
+      console.error(
+        `dist/${declaration} re-exports "${specifier}" without a file extension, ` +
+          `which does not resolve under node16 or nodenext`,
+      );
+      process.exit(1);
+    }
+  }
+}

@@ -14,7 +14,7 @@ import {
   STATE_POSE,
   type GazeIntent,
   type GisxIconPaneState,
-} from "../src/index";
+} from "../src/index.js";
 
 function paneStateName(state: GisxIconPaneState): string {
   return typeof state === "string" ? state : "Exited";

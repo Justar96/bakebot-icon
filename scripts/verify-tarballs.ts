@@ -112,6 +112,41 @@ for (const [name, dir] of [
   }
 }
 
+/* Everything above reads the tarball ourselves. These two read it the way the
+ * ecosystem does.
+ *
+ * `publint` checks the manifest against how registries and bundlers actually
+ * behave. `attw` resolves every export the way TypeScript will, under each
+ * module resolution mode a consumer can pick, which is the one thing none of
+ * our own checks did: 0.3.1 shipped declarations whose relative specifiers had
+ * no file extensions, so `moduleResolution: node16` could not resolve them and
+ * reported the failure against the consumer's own import line. The runtime
+ * bundle was correct throughout, which is why 97 checks, 86 tests and a real
+ * consuming site all passed while the types were broken.
+ *
+ * `--profile esm-only` is the honest description of these packages: they are
+ * ESM, and a CJS `require` of them is expected to fail rather than being a
+ * defect to report. The stylesheet export is excluded because a `.css` file
+ * has no types and no JavaScript for `attw` to resolve. */
+for (const [name, tarball] of Object.entries(tarballs)) {
+  const lint = spawnSync("bunx", ["publint", tarball], { encoding: "utf8" });
+  check(lint.status === 0, `${name}: publint reports a publishable manifest`);
+  if (lint.status !== 0) console.error(lint.stdout ?? lint.stderr);
+
+  const types = spawnSync(
+    "bunx",
+    /* `--exclude-entrypoints` takes a list, so it swallows the tarball path if
+     * that comes after it. The file has to be first. */
+    ["attw", tarball, "--profile", "esm-only", "--exclude-entrypoints", "gisx-icon.css"],
+    { encoding: "utf8" },
+  );
+  check(
+    types.status === 0,
+    `${name}: every export resolves for TypeScript under node16 and bundler`,
+  );
+  if (types.status !== 0) console.error(types.stdout ?? types.stderr);
+}
+
 const reactManifest = JSON.parse(
   run(["tar", "-xzOf", tarballs["@bakebot/react"]!, "package/package.json"], scratch),
 ) as { dependencies: Record<string, string> };
@@ -375,7 +410,11 @@ const declarationSurface = (path: string, seen = new Set<string>()): Declaration
     surface.types.add(match[1]!);
   }
   for (const match of declaration.matchAll(/export\s+\*\s+from\s+["'](\.\/[^"']+)["']/g)) {
-    const nestedPath = join(path.replace(/\/[^/]+$/, ""), `${match[1]!.slice(2)}.d.ts`);
+    /* Declarations spell relative specifiers with the `.js` extension the
+     * runtime uses, because that is what resolves under node16. The file next
+     * to them is the matching `.d.ts`. */
+    const specifier = match[1]!.slice(2).replace(/\.js$/, "");
+    const nestedPath = join(path.replace(/\/[^/]+$/, ""), `${specifier}.d.ts`);
     const nested = declarationSurface(nestedPath, seen);
     for (const name of nested.runtime) surface.runtime.add(name);
     for (const name of nested.types) surface.types.add(name);

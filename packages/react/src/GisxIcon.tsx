@@ -13,8 +13,8 @@ import {
   type MascotTuning,
   type TileSpec,
 } from "@bakebot/core";
-import type { GazeIntent, GisxIconConfig, GisxIconPaneState, GisxIconState } from "./types";
-import { useEyeMotion, type ReducedMotionBehaviour } from "./useEyeMotion";
+import type { GazeIntent, GisxIconConfig, GisxIconPaneState, GisxIconState } from "./types.js";
+import { useEyeMotion, type ReducedMotionBehaviour } from "./useEyeMotion.js";
 
 /* Where the two eyes sit face-on. Given no geometry because the pair is
  * derived from its own radii rather than from the tile, so it is the same in

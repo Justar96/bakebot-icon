@@ -1,5 +1,5 @@
-import { ATTENTIVE_GAZE_INTENTS, DEFAULT_GAZE_INTENTS } from "./gaze";
-import type { GazeIntent, GisxIconState } from "./protocol";
+import { ATTENTIVE_GAZE_INTENTS, DEFAULT_GAZE_INTENTS } from "./gaze.js";
+import type { GazeIntent, GisxIconState } from "./protocol.js";
 
 /**
  * What each state means to the mascot: what it looks at, and what shape it holds

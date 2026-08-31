@@ -1,7 +1,10 @@
 {
   "name": "@bakebot/core",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
   "type": "module",
   "description": "The gisx mascot's character: a headless spring simulation with no renderer.",
   "keywords": [
@@ -35,6 +38,7 @@
   },
   "files": [
     "dist",
+    "CHANGELOG.md",
     "README.md",
     "LICENSE"
   ],

@@ -10,15 +10,15 @@ import { describe, expect, it } from "bun:test";
  * non-finite value on screen.
  */
 
-import { createMascot, type MascotPose } from "../src/mascot";
-import { DEFAULT_SHAPE, facingAngles, facingEyes, MASCOT_GEOMETRY } from "../src/geometry";
-import { ATTENTIVE_GAZE_INTENTS, createRandom, DEFAULT_GAZE_INTENTS } from "../src/gaze";
+import { createMascot, type MascotPose } from "../src/mascot.js";
+import { DEFAULT_SHAPE, facingAngles, facingEyes, MASCOT_GEOMETRY } from "../src/geometry.js";
+import { ATTENTIVE_GAZE_INTENTS, createRandom, DEFAULT_GAZE_INTENTS } from "../src/gaze.js";
 import {
   DEFAULT_TUNING,
   resolveTuning,
   SETTLED_TUNING,
   type MascotTuning,
-} from "../src/tuning";
+} from "../src/tuning.js";
 
 /** A frame at 60 Hz, which is two of the simulation's own steps. */
 const FRAME = 1 / 60;

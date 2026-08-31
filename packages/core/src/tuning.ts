@@ -8,8 +8,8 @@
  * discipline `normalizeGazeIntents` applies to gaze data.
  */
 
-import { clamp } from "./geometry";
-import type { SpringConfig } from "./spring";
+import { clamp } from "./geometry.js";
+import type { SpringConfig } from "./spring.js";
 
 /**
  * A spring described the way a caller can reason about it.

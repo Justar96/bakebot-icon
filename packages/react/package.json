@@ -1,7 +1,10 @@
 {
   "name": "@bakebot/react",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
   "type": "module",
   "description": "Living gisx mascot: programmatic motion, fluid physics, one-line wiring.",
   "keywords": [
@@ -43,6 +46,7 @@
   },
   "files": [
     "dist",
+    "CHANGELOG.md",
     "README.md",
     "LICENSE"
   ],

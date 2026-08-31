@@ -24,7 +24,9 @@
     "verify:tarballs": "bun scripts/verify-tarballs.ts"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "@types/bun": "catalog:",
+    "publint": "^0.3.24",
     "typescript": "catalog:"
   }
 }

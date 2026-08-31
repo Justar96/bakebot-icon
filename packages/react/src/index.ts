@@ -8,4 +8,4 @@
 
 import "./gisx-icon.css";
 
-export * from "./headless";
+export * from "./headless.js";

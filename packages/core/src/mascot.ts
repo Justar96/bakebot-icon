@@ -20,7 +20,7 @@ import {
   isBlinking,
   queueBlink,
   type EyeState,
-} from "./eye";
+} from "./eye.js";
 import {
   DEFAULT_SHAPE,
   facingAngles,
@@ -28,10 +28,10 @@ import {
   type MascotShapeName,
   type TileShape,
   type TileSpec,
-} from "./geometry";
-import { createRandom, nextIntentIndex, normalizeGazeIntents } from "./gaze";
-import { DEFAULT_RESOLVED, resolveTuning, type MascotTuning, type ResolvedTuning } from "./tuning";
-import type { GazeIntent } from "./protocol";
+} from "./geometry.js";
+import { createRandom, nextIntentIndex, normalizeGazeIntents } from "./gaze.js";
+import { DEFAULT_RESOLVED, resolveTuning, type MascotTuning, type ResolvedTuning } from "./tuning.js";
+import type { GazeIntent } from "./protocol.js";
 
 /* One fixed step keeps the springs identical on a 60 Hz panel and a 144 Hz
  * one; the accumulator absorbs the difference. */

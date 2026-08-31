@@ -21,13 +21,13 @@
  * than shipping.
  */
 
-export { createMascot } from "./mascot";
-export type { Mascot, MascotOptions, MascotPose } from "./mascot";
-export { DEFAULT_TUNING, SETTLED_TUNING } from "./tuning";
-export type { MascotTuning, SpringTuning } from "./tuning";
-export { ATTENTIVE_GAZE_INTENTS, DEFAULT_GAZE_INTENTS } from "./gaze";
-export { facingEyes, mascotGeometry, MASCOT_GEOMETRY, MASCOT_SHAPES } from "./geometry";
-export type { FacingEye, MascotGeometry, MascotShapeName, TileSpec } from "./geometry";
-export { REST_POSE, STATE_GAZE, STATE_POSE } from "./states";
-export type { MascotStatePose } from "./states";
-export type { GazeIntent, GisxIconPaneState, GisxIconState } from "./protocol";
+export { createMascot } from "./mascot.js";
+export type { Mascot, MascotOptions, MascotPose } from "./mascot.js";
+export { DEFAULT_TUNING, SETTLED_TUNING } from "./tuning.js";
+export type { MascotTuning, SpringTuning } from "./tuning.js";
+export { ATTENTIVE_GAZE_INTENTS, DEFAULT_GAZE_INTENTS } from "./gaze.js";
+export { facingEyes, mascotGeometry, MASCOT_GEOMETRY, MASCOT_SHAPES } from "./geometry.js";
+export type { FacingEye, MascotGeometry, MascotShapeName, TileSpec } from "./geometry.js";
+export { REST_POSE, STATE_GAZE, STATE_POSE } from "./states.js";
+export type { MascotStatePose } from "./states.js";
+export type { GazeIntent, GisxIconPaneState, GisxIconState } from "./protocol.js";

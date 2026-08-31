@@ -12,7 +12,7 @@ import {
   type MascotTuning,
   type TileSpec,
 } from "@bakebot/core";
-import type { GazeIntent } from "./types";
+import type { GazeIntent } from "./types.js";
 
 /**
  * What the component needs back: the four elements the simulation writes to,

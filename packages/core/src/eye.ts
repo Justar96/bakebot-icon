@@ -13,9 +13,9 @@
  * `MascotPose.yaw`.
  */
 
-import { contain, DEFAULT_SHAPE, smoothstep, travelDistance, type TileShape } from "./geometry";
-import { restingSpring, stepSpring, type SpringConfig, type SpringValue } from "./spring";
-import { DEFAULT_RESOLVED, type ResolvedTuning } from "./tuning";
+import { contain, DEFAULT_SHAPE, smoothstep, travelDistance, type TileShape } from "./geometry.js";
+import { restingSpring, stepSpring, type SpringConfig, type SpringValue } from "./spring.js";
+import { DEFAULT_RESOLVED, type ResolvedTuning } from "./tuning.js";
 
 /* Springs. Both are under-damped on purpose and the damping ratio is what
  * separates them. The gaze is nearly critical, so a saccade lands with one

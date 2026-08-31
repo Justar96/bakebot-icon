@@ -1,4 +1,13 @@
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
+import {
+  cpSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  unlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { rm } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
@@ -123,5 +132,37 @@ for (const declaration of ["dist/index.d.ts", "dist/headless.d.ts"]) {
     console.error(`${declaration} leaked a path into core's source tree:`);
     console.error(dts);
     process.exit(1);
+  }
+}
+
+/* The stylesheet import belongs in `dist/index.js`, which is where it does
+ * something. TypeScript copies it into the declaration too, where it is not
+ * resolvable as a type: that alone made the browser entry unresolvable to
+ * `are-the-types-wrong` under every mode including bundler, and errored any
+ * consumer building without `skipLibCheck`. */
+const indexDts = readFileSync("dist/index.d.ts", "utf8").replace(
+  /^import\s+["']\.\/gisx-icon\.css["'];?\r?\n/m,
+  "",
+);
+writeFileSync("dist/index.d.ts", indexDts);
+
+/* Same reasoning as core: an extensionless relative specifier in a declaration
+ * does not resolve under node16 or nodenext, and the consumer sees the error
+ * on their own import line. */
+for (const declaration of readdirSync("dist").filter((f) => f.endsWith(".d.ts"))) {
+  const dts = readFileSync(join("dist", declaration), "utf8");
+  if (/\.css["']/.test(dts)) {
+    console.error(`dist/${declaration} imports a stylesheet, which types cannot resolve`);
+    process.exit(1);
+  }
+  for (const [, specifier] of dts.matchAll(/from\s*["'](\.\.?\/[^"']*)["']/g)) {
+    if (!specifier) continue;
+    if (!/\.(js|css|json)$/.test(specifier)) {
+      console.error(
+        `dist/${declaration} re-exports "${specifier}" without a file extension, ` +
+          `which does not resolve under node16 or nodenext`,
+      );
+      process.exit(1);
+    }
   }
 }

@@ -19,7 +19,7 @@ import {
   isBlinking,
   MAX_STRETCH,
   type EyeState,
-} from "../src/eye";
+} from "../src/eye.js";
 import {
   ATTENTIVE_GAZE_INTENTS,
   createRandom,
@@ -27,7 +27,7 @@ import {
   intentWeight,
   nextIntentIndex,
   normalizeGazeIntents,
-} from "../src/gaze";
+} from "../src/gaze.js";
 import {
   boundaryNormal,
   contain,
@@ -42,11 +42,11 @@ import {
   tileShape,
   travelDistance,
   type TileShape,
-} from "../src/geometry";
-import { stepSpring } from "../src/spring";
-import { STATE_GAZE } from "../src/states";
-import { resolveTuning } from "../src/tuning";
-import type { GazeIntent } from "../src/protocol";
+} from "../src/geometry.js";
+import { stepSpring } from "../src/spring.js";
+import { STATE_GAZE } from "../src/states.js";
+import { resolveTuning } from "../src/tuning.js";
+import type { GazeIntent } from "../src/protocol.js";
 
 const STEP = 1 / 240;
 const CORNER = { x: 26, y: -26 };

@@ -7,8 +7,8 @@
  * own places to look without reading any physics.
  */
 
-import { clamp } from "./geometry";
-import type { GazeIntent } from "./protocol";
+import { clamp } from "./geometry.js";
+import type { GazeIntent } from "./protocol.js";
 
 /**
  * The look length the weighting below treats as far. It belongs to the gaze
