@@ -1,0 +1,67 @@
+{
+  "name": "@bakebot/react",
+  "version": "0.3.1",
+  "license": "MIT",
+  "type": "module",
+  "description": "Living gisx mascot: programmatic motion, fluid physics, one-line wiring.",
+  "keywords": [
+    "react",
+    "component",
+    "mascot",
+    "animation",
+    "svg"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Justar96/gisx-icon.git",
+    "directory": "packages/react"
+  },
+  "homepage": "https://github.com/Justar96/gisx-icon",
+  "bugs": {
+    "url": "https://github.com/Justar96/gisx-icon/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": [
+    "./dist/index.js",
+    "./dist/gisx-icon.css"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./headless": {
+      "types": "./dist/headless.d.ts",
+      "import": "./dist/headless.js"
+    },
+    "./gisx-icon.css": "./dist/gisx-icon.css",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "bun scripts/build.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@bakebot/core": "workspace:^"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "typescript": "catalog:"
+  }
+}

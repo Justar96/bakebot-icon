@@ -1,0 +1,10 @@
+# The linker is otherwise decided by a `configVersion` field inside bun.lock,
+# which differs by how the project was migrated: a pnpm import lands on
+# isolated, an npm or yarn one on hoisted, and an older lockfile keeps whatever
+# it already had. State it here so every machine and every CI runner agrees.
+#
+# Isolated is the right default for a repo that publishes: a package can import
+# only what it declares. That turns a phantom dependency into a local failure
+# instead of into a broken published package.
+[install]
+linker = "isolated"

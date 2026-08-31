@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    /* Both packages resolve from source, so a slider moves the real mascot
+     * with no build step in between. */
+    "paths": {
+      "@bakebot/react": ["../../packages/react/src/index.ts"],
+      "@bakebot/core": ["../../packages/core/src/index.ts"]
+    }
+  },
+  /* The binding is typechecked from source here, so the ambient declaration
+   * for its stylesheet import has to come along — it lives in that package and
+   * is not reachable through `paths`. */
+  "include": ["src", "stylex.bun.ts", "stylex.config.ts", "../../packages/react/src/css.d.ts"]
+}

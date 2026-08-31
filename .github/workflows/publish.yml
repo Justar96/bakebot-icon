@@ -1,0 +1,105 @@
+name: publish
+
+on:
+  push:
+    tags: ["v*"]
+  # So the first run of this workflow is never also the first release. A dry
+  # run takes every gate and both packs, then asks npm to validate the
+  # tarballs without consuming a version number. It needs no token, which is
+  # the point: the path can be proven before the secret exists.
+  workflow_dispatch:
+    inputs:
+      dryRun:
+        description: Pack and validate, but do not publish
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  # Provenance is a sigstore attestation signed with this token. Without it npm
+  # rejects `--provenance` outright.
+  id-token: write
+
+jobs:
+  npm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      # Pinned, not `canary`. This repo works around bundler behaviour that is
+      # specific to a version (see packages/core/src/index.ts), so a floating
+      # toolchain would turn a publish into a version-bisect.
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.0
+
+      # `bun publish` still has no `--provenance` flag, so the tarballs Bun
+      # packs are handed to npm to publish. Bun packs because npm does *not*
+      # rewrite `workspace:` and `catalog:` protocols, and this workspace uses
+      # both — an `npm publish` from source would ship an unresolvable manifest.
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          registry-url: https://registry.npmjs.org
+
+      - run: bun install --frozen-lockfile
+
+      # Only a tag carries a version to disagree with. A manual run has none,
+      # and is checking the path rather than a release.
+      - name: The tag is the version being published
+        if: github.event_name == 'push'
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          for pkg in packages/core packages/react; do
+            version="$(bun --print "require('./$pkg/package.json').version")"
+            if [ "$version" != "$tag" ]; then
+              echo "::error::$pkg is at $version but the tag says $tag"
+              exit 1
+            fi
+          done
+
+      # Built in order and as separate steps, rather than a single filtered
+      # invocation. React's declaration build typechecks against core's
+      # *emitted* `.d.ts`, so core has to exist first, and `--filter '*'` will
+      # happily run a dependent after its dependency has failed.
+      - run: bun run --filter '@bakebot/core' build
+      - run: bun run --filter '@bakebot/react' build
+
+      - run: bun test
+      - run: bun run typecheck
+
+      # Proves the artifact rather than the workspace: no unrewritten protocols
+      # in the packed manifests, both tarballs installable outside the
+      # workspace, and a consumer that typechecks against the published types.
+      - run: bun run verify:tarballs
+
+      # A directory each, so the publish globs cannot cross: the two packages
+      # pack as `bakebot-core-<version>.tgz` and `bakebot-react-<version>.tgz`,
+      # which a single `bakebot-*.tgz` glob would both match.
+      - name: Pack @bakebot/core
+        working-directory: packages/core
+        run: bun pm pack --destination "$RUNNER_TEMP/tarballs/core"
+      - name: Pack @bakebot/react
+        working-directory: packages/react
+        run: bun pm pack --destination "$RUNNER_TEMP/tarballs/react"
+
+      # Core first: `@bakebot/react` declares a dependency on it, and a consumer who
+      # installs during the gap between the two would otherwise get a package
+      # whose dependency does not exist.
+      #
+      # These are explicit steps because `prepublishOnly` and friends do not
+      # run when npm is given a tarball path — every gate above has to be its
+      # own step or it silently does not happen.
+      # Provenance is dropped for a dry run rather than combined with it: the
+      # attestation is signed against a real published artifact, so asking for
+      # both says two contradictory things.
+      - name: Publish @bakebot/core
+        run: npm publish "$RUNNER_TEMP"/tarballs/core/*.tgz --access public $PUBLISH_MODE
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          PUBLISH_MODE: ${{ inputs.dryRun && '--dry-run' || '--provenance' }}
+      - name: Publish @bakebot/react
+        run: npm publish "$RUNNER_TEMP"/tarballs/react/*.tgz --access public $PUBLISH_MODE
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          PUBLISH_MODE: ${{ inputs.dryRun && '--dry-run' || '--provenance' }}

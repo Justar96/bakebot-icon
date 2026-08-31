@@ -1,0 +1,27 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": false,
+    "emitDeclarationOnly": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "types": [],
+    /*
+     * The declaration build resolves the character from its *built*
+     * declarations, not from its source — unlike `tsconfig.json`, which points
+     * at source so tests never need a build first.
+     *
+     * Two reasons. Source would sit outside `rootDir` and TypeScript refuses
+     * to emit across that boundary (TS6059). And this is the resolution a
+     * consumer actually performs, so emitting against it means the published
+     * `.d.ts` is checked against the published types rather than against files
+     * no consumer will ever have. Core is built before this runs.
+     */
+    "paths": {
+      "@bakebot/core": ["../core/dist/index.d.ts"]
+    }
+  },
+  "include": ["src"]
+}

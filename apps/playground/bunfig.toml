@@ -1,0 +1,8 @@
+# StyleX compiles at bundle time. Bun's fullstack server runs this plugin over
+# every `[jt]sx?` module it bundles for `index.html`, and writes the collected
+# CSS to `dist/stylex.dev.css`, which `index.html` links. There is still no
+# second build tool: Bun is the runtime, bundler, and dev server. The wrapper
+# shares `stylex.config.ts` with production and documents its Bun lifecycle
+# compatibility shim.
+[serve.static]
+plugins = ["./stylex.bun.ts"]

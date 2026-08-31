@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "stylex-authoring": {
+      "source": "amogharajsandur/skills",
+      "sourceType": "github",
+      "skillPath": "stylex/stylex-authoring/SKILL.md",
+      "computedHash": "f774f20dfbbdc8da91c33028b5f80315451dbbae3d053e894c9e311e2e25fb7d"
+    }
+  }
+}

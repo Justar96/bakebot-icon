@@ -1,0 +1,127 @@
+/* The only hand-written CSS: what StyleX cannot own. Everything else is
+ * compiled from `*.stylex.ts` tokens and `stylex.create` rules.
+ *
+ * Declare the cascade once, before either stylesheet contributes rules. The
+ * reset stays below StyleX's generated priority layers in development and in
+ * the production bundle, regardless of which asset finishes first. */
+@layer reset, priority1, priority2, priority3, priority4, priority5;
+
+/* Fluid Functionalism's scroll-fade, vendored. A column that can still be
+ * scrolled dissolves toward that edge, and goes crisp again once there is
+ * nothing more that way — so the fade says "there is more of this" rather
+ * than being a decoration on a border.
+ *
+ * The two alphas are driven by the scroller's own position rather than by a
+ * listener: `scroll(self)` is the timeline, and each animation is ranged over
+ * the first and last `--scroll-fade-size` of travel. Registering them with
+ * `@property` as numbers is what makes them interpolable at all — an
+ * unregistered custom property animates in discrete jumps.
+ *
+ * All of it lives here because none of it is anything StyleX writes:
+ * `@property`, keyframes over a custom property, and `animation-timeline`.
+ * https://www.fluidfunctionalism.com/docs/scrollbars */
+@property --sf-start {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+
+@property --sf-end {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+
+/* 1 is opaque, so both edges start crisp and stay that way in a browser that
+ * never runs these. */
+@keyframes sf-reveal-start {
+  from { --sf-start: 1; }
+  to { --sf-start: 0; }
+}
+
+@keyframes sf-reveal-end {
+  from { --sf-end: 0; }
+  to { --sf-end: 1; }
+}
+
+@layer reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  /* The other half of hiding a native scrollbar. `scrollbar-width: none` is
+   * on the viewport rule in `scroll-area.tsx`; this is the WebKit spelling of
+   * the same thing, and it is here because StyleX does not write vendor
+   * pseudo-elements. The overlay bar the component draws replaces it. */
+  [data-slot="scroll-area-viewport"]::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Gated on the whole feature, not applied and then enhanced. Fluid ships a
+   * static mask underneath for browsers without scroll-driven animation, but
+   * a static mask fades the top of a column that is already scrolled to the
+   * top — a permanent smudge over the first 48px, which is worse than no
+   * fade. Where the timeline works the appearance is identical. */
+  @supports (animation-timeline: scroll()) {
+    [data-scroll-fade] {
+      --scroll-fade-size: 48px;
+
+      -webkit-mask-image: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, var(--sf-start)) 0,
+        #000 var(--scroll-fade-size),
+        #000 calc(100% - var(--scroll-fade-size)),
+        rgba(0, 0, 0, var(--sf-end)) 100%
+      );
+      mask-image: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, var(--sf-start)) 0,
+        #000 var(--scroll-fade-size),
+        #000 calc(100% - var(--scroll-fade-size)),
+        rgba(0, 0, 0, var(--sf-end)) 100%
+      );
+
+      animation: sf-reveal-start linear both, sf-reveal-end linear both;
+      animation-timeline: scroll(self), scroll(self);
+      animation-range-start: 0, calc(100% - var(--scroll-fade-size));
+      animation-range-end: var(--scroll-fade-size), 100%;
+    }
+  }
+
+  button,
+  input,
+  output,
+  fieldset,
+  legend,
+  figure,
+  pre,
+  h1,
+  h2,
+  p {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font: inherit;
+    color: inherit;
+    background: none;
+    min-width: 0;
+  }
+}

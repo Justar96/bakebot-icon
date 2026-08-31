@@ -1,0 +1,27 @@
+{
+  "name": "@bakebot/playground",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Live tuning surface for the gisx mascot. Not published.",
+  "scripts": {
+    "dev": "bun run src/serve.ts",
+    "build": "bun run src/build.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@bakebot/core": "workspace:*",
+    "@stylexjs/stylex": "0.19.0",
+    "cuelume": "^0.2.2",
+    "@bakebot/react": "workspace:*"
+  },
+  "devDependencies": {
+    "@stylexjs/unplugin": "0.19.0",
+    "@types/bun": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "typescript": "catalog:"
+  }
+}
